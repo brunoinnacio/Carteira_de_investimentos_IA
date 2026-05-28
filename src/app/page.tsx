@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WaitlistForm } from "@/components/WaitlistForm";
 
 export default function Home() {
   return (
@@ -165,28 +166,11 @@ export default function Home() {
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               Quero ser avisado quando estiver pronto
             </h2>
-            <p className="mt-4 text-slate-300">
+            <p className="mb-8 mt-4 text-slate-300">
               As primeiras pessoas da lista vão usar tudo de graça e ajudar a
               definir o que vem a seguir.
             </p>
-            <form className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row">
-              <input
-                type="email"
-                required
-                placeholder="seu@email.com"
-                className="h-12 flex-1 rounded-full border border-slate-700 bg-slate-900 px-5 text-slate-100 placeholder-slate-500 outline-none focus:border-blue-500"
-              />
-              <button
-                type="submit"
-                className="h-12 rounded-full bg-blue-600 px-6 text-base font-medium text-white transition hover:bg-blue-500"
-              >
-                Quero entrar
-              </button>
-            </form>
-            <p className="mt-3 text-xs text-slate-500">
-              Em breve. Sem spam — você só recebe quando tiver algo novo
-              funcionando.
-            </p>
+            <WaitlistForm />
           </div>
         </section>
       </main>
