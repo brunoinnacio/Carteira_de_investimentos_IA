@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FII Brasil
 
-## Getting Started
+Plataforma web para investidores em Fundos Imobiliários (FIIs) brasileiros:
+calculadoras de aporte, simulador "bola de neve", comparador
+aluguel-vs-FII, radar de oportunidades, carteira pessoal com importação
+direta do extrato da B3 e calendário projetado de proventos.
 
-First, run the development server:
+Stack: **Next.js 16** (App Router) + **Tailwind CSS** + **Supabase**
+(Auth + Postgres) + **SheetJS** para parse de XLSX.
+
+## Funcionalidades
+
+- **Landing + lista de espera** (`/`) — captura de email persistida no
+  Supabase.
+- **Autenticação** — cadastro, login, recuperação e redefinição de
+  senha via Supabase Auth (`/entrar`, `/cadastro`, `/esqueci-senha`,
+  `/redefinir-senha`).
+- **Calculadoras**
+  - `/calculadora-renda` — quanto preciso investir para uma renda alvo.
+  - `/bola-de-neve` — projeção de aporte + reinvestimento ao longo do tempo.
+  - `/aluguel-vs-fii` — comparador imóvel próprio vs cota de FII.
+- **Carteira**
+  - `/carteira` — adicionar/editar/remover FIIs manualmente (persistido em
+    `localStorage`). Inputs com máscara monetária BR e validação rigorosa
+    de ticker (`XXXX11`).
+  - `/importacao` — upload do extrato XLSX/CSV de Movimentação da B3, com
+    parser tolerante a múltiplos formatos e painel de diagnóstico técnico.
+  - `/calendario` — projeção de 12 meses de proventos com base na carteira.
+  - `/radar` — classificador de oportunidades por P/VP, DY e YoC.
+
+## Pré-requisitos
+
+- Node.js 20+ (o repositório vem com uma cópia portátil em
+  `../node-portable/` usada pelo `dev.cmd` no Windows).
+- Conta no [Supabase](https://supabase.com) (free tier basta).
+
+## Setup local
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/brunoinnacio/fiibrasil.git
+cd fiibrasil
+npm install
+cp .env.example .env.local      # preencha com as chaves do seu projeto Supabase
+npm run dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+No Windows, com Node portátil, basta executar `dev.cmd`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Variáveis de ambiente
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Veja [.env.example](./.env.example). As chaves obrigatórias são:
 
-## Learn More
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (server actions, **nunca expor no client**)
 
-To learn more about Next.js, take a look at the following resources:
+### Setup do Supabase
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Em **Authentication → Providers**, habilite *Email*.
+2. Em **Authentication → URL Configuration**, defina o Site URL
+   (`http://localhost:3000` em dev; seu domínio em prod) e adicione
+   `/auth/callback` em *Redirect URLs*.
+3. Crie a tabela `waitlist` (usada pela landing):
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```sql
+   create table public.waitlist (
+     id uuid primary key default gen_random_uuid(),
+     email text not null unique,
+     source text,
+     created_at timestamptz not null default now()
+   );
+   alter table public.waitlist enable row level security;
+   ```
 
-## Deploy on Vercel
+## Deploy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Pronto para Vercel. Configure as mesmas variáveis em
+**Project Settings → Environment Variables** e habilite *Production*,
+*Preview* e *Development* conforme necessário.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Scripts úteis
+
+- `scripts/list_waitlist.mjs` — lista os emails cadastrados (lê
+  `.env.local`).
+- `scripts/smoke_waitlist.py` — smoke test e2e do formulário em produção
+  (requer `playwright`).

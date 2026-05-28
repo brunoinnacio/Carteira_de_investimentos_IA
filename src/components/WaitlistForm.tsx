@@ -12,7 +12,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="h-12 rounded-full bg-blue-600 px-6 text-base font-medium text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+      className="h-11 rounded-lg bg-blue-600 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
     >
       {pending ? "Enviando..." : "Quero entrar"}
     </button>
@@ -33,7 +33,7 @@ export function WaitlistForm() {
           name="email"
           required
           placeholder="seu@email.com"
-          className="h-12 flex-1 rounded-full border border-slate-700 bg-slate-900 px-5 text-slate-100 placeholder-slate-500 outline-none focus:border-blue-500"
+          className="h-11 flex-1 rounded-lg border border-slate-300 bg-white px-4 text-slate-900 placeholder-slate-400 shadow-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
         />
         <SubmitButton />
       </form>
@@ -42,15 +42,15 @@ export function WaitlistForm() {
         <p
           role="status"
           className={`mt-4 text-sm ${
-            state.ok ? "text-emerald-400" : "text-rose-400"
+            state.ok ? "text-emerald-700" : "text-rose-700"
           }`}
         >
           {state.message}
         </p>
       ) : (
         <p className="mt-3 text-xs text-slate-500">
-          Em breve. Sem spam — você só recebe quando tiver algo novo
-          funcionando.
+          Lista de espera — você não recebe nenhum email automático agora.
+          Será avisado por aqui quando o sistema estiver pronto.
         </p>
       )}
     </div>

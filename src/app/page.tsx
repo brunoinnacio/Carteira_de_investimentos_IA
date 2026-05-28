@@ -1,209 +1,174 @@
 import Link from "next/link";
 import { WaitlistForm } from "@/components/WaitlistForm";
 
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1">
-      <header className="border-b border-slate-800/60">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 font-bold text-white">
-              FII
-            </span>
-            <span className="text-lg font-semibold tracking-tight">
-              FII Brasil
-            </span>
-          </Link>
-          <nav className="hidden items-center gap-8 text-sm text-slate-300 sm:flex">
-            <a href="#ferramentas" className="hover:text-white">
-              Ferramentas
-            </a>
-            <a href="#como-funciona" className="hover:text-white">
-              Como funciona
-            </a>
-            <a
-              href="https://github.com/brunoinnacio/Carteira_de_investimentos_IA"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white"
-            >
-              GitHub
-            </a>
-          </nav>
-          <a
-            href="#lista-espera"
-            className="rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-500"
-          >
-            Entrar na lista
-          </a>
-        </div>
-      </header>
-
-      <main className="flex-1">
-        <section className="relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_rgba(43,107,255,0.18),_transparent_60%)]" />
-          <div className="mx-auto w-full max-w-6xl px-6 py-24 sm:py-32">
-            <div className="flex flex-col items-start gap-6">
-              <span className="rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-200">
-                Em construção · build in public
-              </span>
-              <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight sm:text-6xl">
-                Aprenda a viver de renda{" "}
-                <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
-                  com Fundos Imobiliários
-                </span>
-                . Sem virar trader.
-              </h1>
-              <p className="max-w-2xl text-lg text-slate-300 sm:text-xl">
-                Calculadoras, calendário de proventos e radar de oportunidades
-                — pensados para quem está começando e quer construir uma renda
-                mensal com FIIs.
-              </p>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <a
-                  href="#lista-espera"
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-blue-600 px-6 text-base font-medium text-white transition hover:bg-blue-500"
-                >
-                  Receber as ferramentas grátis
-                </a>
-                <a
-                  href="#como-funciona"
-                  className="inline-flex h-12 items-center justify-center rounded-full border border-slate-700 px-6 text-base font-medium text-slate-200 transition hover:border-slate-500 hover:text-white"
-                >
-                  Como funciona
-                </a>
-              </div>
-              <p className="text-sm text-slate-400">
-                Grátis durante o desenvolvimento · sem cartão de crédito · sem
-                spam
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="ferramentas"
-          className="border-t border-slate-800/60 bg-slate-900/40"
-        >
-          <div className="mx-auto w-full max-w-6xl px-6 py-20">
-            <div className="mb-12 max-w-2xl">
-              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                O que você vai encontrar aqui
-              </h2>
-              <p className="mt-3 text-slate-300">
-                Tudo o que um investidor iniciante em FIIs precisa para tomar
-                decisões com confiança — sem planilha gigante e sem termos
-                complicados.
-              </p>
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <Card
-                emoji="📅"
-                title="Calendário de proventos"
-                desc="Veja quanto você vai receber e em que dia, mês a mês. Sem surpresa, sem precisar olhar o app do banco."
-              />
-              <Card
-                emoji="🧮"
-                title="Calculadora de quanto investir"
-                desc="Diga quanto quer receber por mês. Mostramos quanto precisa investir em cada FII para chegar lá."
-              />
-              <Card
-                emoji="🎯"
-                title="Radar de oportunidades"
-                desc="P/VP, Dividend Yield e Yield on Cost calculados automaticamente. Sabe na hora se um FII está caro ou barato."
-              />
-              <Card
-                emoji="📊"
-                title="Bola de neve"
-                desc="Acompanhe sua renda mensal crescer. Gráfico mês a mês para se manter motivado a seguir aportando."
-              />
-              <Card
-                emoji="🏗️"
-                title="Rebalanceamento"
-                desc="Tijolo, papel, fiagro: o sistema mostra quando uma camada está pesada demais e o que comprar a seguir."
-              />
-              <Card
-                emoji="📥"
-                title="Importação B3"
-                desc="Suba o extrato em Excel direto da Área do Investidor. O sistema lê tudo e atualiza sua carteira."
-              />
-            </div>
-          </div>
-        </section>
-
-        <section id="como-funciona" className="border-t border-slate-800/60">
-          <div className="mx-auto w-full max-w-6xl px-6 py-20">
-            <div className="mb-12 max-w-2xl">
-              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                Para quem é o FII Brasil
-              </h2>
-            </div>
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              <Step
-                step="1"
-                title="Você está começando"
-                desc="Ouviu falar que FIIs pagam todo mês isento de IR mas não sabe por onde começar nem quanto investir."
-              />
-              <Step
-                step="2"
-                title="Quer renda, não trade"
-                desc="Não tem tempo nem vontade de ficar olhando gráfico. Quer dinheiro caindo na conta com previsibilidade."
-              />
-              <Step
-                step="3"
-                title="Cansou de planilha"
-                desc="Já tentou montar planilha no Excel mas se perde nos cálculos, esquece de atualizar e desiste no meio."
-              />
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="lista-espera"
-          className="border-t border-slate-800/60 bg-gradient-to-b from-slate-900/60 to-slate-950"
-        >
-          <div className="mx-auto w-full max-w-3xl px-6 py-24 text-center">
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Quero ser avisado quando estiver pronto
-            </h2>
-            <p className="mb-8 mt-4 text-slate-300">
-              As primeiras pessoas da lista vão usar tudo de graça e ajudar a
-              definir o que vem a seguir.
-            </p>
-            <WaitlistForm />
-          </div>
-        </section>
-      </main>
-
-      <footer className="border-t border-slate-800/60">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-4 px-6 py-8 text-sm text-slate-400 sm:flex-row sm:items-center">
-          <p>
-            © {new Date().getFullYear()} FII Brasil · feito por Bruno Inácio
-          </p>
-          <p>
-            Conteúdo educacional · não é recomendação de investimento
-          </p>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-function Card({
-  emoji,
-  title,
-  desc,
-}: {
+type Tool = {
   emoji: string;
   title: string;
   desc: string;
-}) {
+  href: string;
+};
+
+const tools: Tool[] = [
+  {
+    emoji: "🧮",
+    title: "Quanto investir para viver de FII",
+    desc: "Diga quanto quer receber por mês. Mostramos o patrimônio necessário e quanto tempo leva pra chegar lá.",
+    href: "/calculadora-renda",
+  },
+  {
+    emoji: "📊",
+    title: "Bola de neve",
+    desc: "Visualize sua renda mensal crescendo mês a mês com aporte + reinvestimento. Gráfico interativo.",
+    href: "/bola-de-neve",
+  },
+  {
+    emoji: "🏠",
+    title: "Aluguel vs FII",
+    desc: "Mesmo dinheiro, duas estratégias. Veja qual rende mais líquido depois de IR, vacância e manutenção.",
+    href: "/aluguel-vs-fii",
+  },
+  {
+    emoji: "🎯",
+    title: "Radar de oportunidades",
+    desc: "Cole P/VP, DY e VPA de qualquer FII e descubra na hora se está atrativo, justo ou caro.",
+    href: "/radar",
+  },
+  {
+    emoji: "📅",
+    title: "Calendário de proventos",
+    desc: "Projeção dos próximos 12 meses com base na sua carteira. Veja quanto entra cada mês.",
+    href: "/calendario",
+  },
+  {
+    emoji: "📥",
+    title: "Importação B3",
+    desc: "Suba o extrato XLSX da Área do Investidor e o sistema monta sua carteira automaticamente.",
+    href: "/importacao",
+  },
+];
+
+export default function Home() {
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 transition hover:border-slate-700">
-      <div className="mb-4 text-3xl">{emoji}</div>
-      <h3 className="text-lg font-semibold text-white">{title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-slate-300">{desc}</p>
-    </div>
+    <main className="flex-1">
+      <section className="mx-auto w-full max-w-6xl px-6 pt-8 pb-12 sm:pt-12">
+        <div className="flex flex-col items-start gap-5">
+          <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+            <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />
+            6 ferramentas no ar · 100% grátis
+          </span>
+          <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-5xl">
+            Aprenda a viver de renda{" "}
+            <span className="text-blue-700">com Fundos Imobiliários</span>.
+            Sem virar trader.
+          </h1>
+          <p className="max-w-2xl text-base text-slate-600 sm:text-lg">
+            Calculadoras, simuladores, radar, calendário e importação da B3 —
+            tudo pensado para quem está começando e quer construir uma renda
+            mensal com FIIs.
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/calculadora-renda"
+              className="inline-flex h-11 items-center justify-center rounded-lg bg-blue-600 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+            >
+              Quanto preciso investir? →
+            </Link>
+            <Link
+              href="/importacao"
+              className="inline-flex h-11 items-center justify-center rounded-lg border border-blue-600 bg-white px-6 text-sm font-semibold text-blue-700 transition hover:bg-blue-600 hover:text-white"
+            >
+              Importar minha carteira
+            </Link>
+          </div>
+          <p className="text-sm text-slate-500">
+            Sem cadastro · sem cartão · sua carteira fica salva no próprio
+            navegador
+          </p>
+        </div>
+      </section>
+
+      <section
+        id="ferramentas"
+        className="border-t border-slate-200 bg-white"
+      >
+        <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:py-16">
+          <div className="mb-8 max-w-2xl">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+              As 6 ferramentas
+            </h2>
+            <p className="mt-2 text-slate-600">
+              Clique em qualquer uma para abrir. Não precisa de cadastro.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {tools.map((t) => (
+              <ToolCard key={t.title} {...t} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="como-funciona" className="border-t border-slate-200">
+        <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:py-16">
+          <div className="mb-8 max-w-2xl">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+              Para quem é o FII Brasil
+            </h2>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <Step
+              step="1"
+              title="Você está começando"
+              desc="Ouviu falar que FIIs pagam todo mês isento de IR mas não sabe por onde começar nem quanto investir."
+            />
+            <Step
+              step="2"
+              title="Quer renda, não trade"
+              desc="Não tem tempo nem vontade de ficar olhando gráfico. Quer dinheiro caindo na conta com previsibilidade."
+            />
+            <Step
+              step="3"
+              title="Cansou de planilha"
+              desc="Já tentou montar planilha no Excel mas se perde nos cálculos, esquece de atualizar e desiste no meio."
+            />
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="lista-espera"
+        className="border-t border-slate-200 bg-white"
+      >
+        <div className="mx-auto w-full max-w-3xl px-6 py-14 text-center">
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            Quero ser avisado das próximas atualizações
+          </h2>
+          <p className="mb-6 mt-3 text-slate-600">
+            Já tem 6 ferramentas no ar. Em breve: gráficos de evolução
+            histórica e radar com base de FIIs pré-carregada.
+          </p>
+          <WaitlistForm />
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function ToolCard({ emoji, title, desc, href }: Tool) {
+  return (
+    <Link
+      href={href}
+      className="group flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+    >
+      <div className="mb-3 flex items-center justify-between">
+        <div className="text-2xl">{emoji}</div>
+      </div>
+      <h3 className="text-base font-semibold text-slate-900">{title}</h3>
+      <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{desc}</p>
+      <span className="mt-4 text-sm font-semibold text-blue-700 transition group-hover:text-blue-800">
+        Abrir ferramenta →
+      </span>
+    </Link>
   );
 }
 
@@ -218,11 +183,11 @@ function Step({
 }) {
   return (
     <div>
-      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-blue-500/30 bg-blue-500/10 text-sm font-semibold text-blue-300">
+      <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-sm font-bold text-blue-700">
         {step}
       </div>
-      <h3 className="text-lg font-semibold text-white">{title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-slate-300">{desc}</p>
+      <h3 className="text-base font-semibold text-slate-900">{title}</h3>
+      <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{desc}</p>
     </div>
   );
 }
