@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import { useCarteira, type Posicao } from "@/lib/carteira";
-import { brl, brlPrecise } from "@/lib/format";
+import { brlPrecise } from "@/lib/format";
 
 const TICKER_REGEX = /\b([A-Z]{4}1[12])\b/;
 const TICKER_REGEX_GLOBAL = /\b([A-Z]{4}1[12])\b/g;
@@ -111,12 +111,19 @@ type Movimento = {
   valor: number;
 };
 
+type TickerIgnorado = {
+  ticker: string;
+  motivo: "nao-fii" | "so-provento";
+  descricao?: string;
+};
+
 type ParseResult = {
   movimentos: Movimento[];
   posicoes: Posicao[];
   avisos: string[];
   modo: "header" | "heuristico";
   ignoradas: number;
+  tickersIgnorados: TickerIgnorado[];
 };
 
 function normalizeHeader(s: unknown): string {
@@ -181,6 +188,21 @@ function detectTipo(s: string): "compra" | "venda" | null {
   return null;
 }
 
+function isProductFII(produto: string): boolean {
+  const s = produto.toLowerCase();
+  return (
+    s.includes("fii") ||
+    s.includes("fdo inv imob") ||
+    s.includes("fundo de invest") ||
+    s.includes("imobiliario") ||
+    s.includes("imobiliária") ||
+    s.includes("imobiliario") ||
+    s.includes("imobiliaria") ||
+    s.includes("fiagro") ||
+    s.includes("fundo imob")
+  );
+}
+
 function classifyB3(
   entradaSaida: string,
   movimentacao: string
@@ -243,6 +265,7 @@ function parseRows(rows: unknown[][]): ParseResult {
       avisos: ["Planilha vazia."],
       modo: "header",
       ignoradas: 0,
+      tickersIgnorados: [],
     };
   }
 
@@ -251,6 +274,11 @@ function parseRows(rows: unknown[][]): ParseResult {
   let ignoradas = 0;
   let modo: "header" | "heuristico" = "header";
   const avisos: string[] = [];
+  const naoFiiMap = new Map<string, string>();
+  const proventoInfoMap = new Map<
+    string,
+    { qtd: number; valorPorCota: number }
+  >();
 
   if (headerRow >= 0) {
     const headers = asRow(rows[headerRow]).map((h) => String(h ?? ""));
@@ -299,6 +327,18 @@ function parseRows(rows: unknown[][]): ParseResult {
         if (!match) continue;
         const ticker = match[1];
 
+        if (!isProductFII(produto)) {
+          if (!naoFiiMap.has(ticker)) {
+            const descricao = produto
+              .replace(new RegExp(`^${ticker}\\s*-?\\s*`), "")
+              .trim()
+              .slice(0, 60);
+            naoFiiMap.set(ticker, descricao);
+          }
+          ignoradas++;
+          continue;
+        }
+
         const entradaSaida =
           colEntradaSaida >= 0 ? String(row[colEntradaSaida] ?? "") : "";
         const movRaw = colMov >= 0 ? String(row[colMov] ?? "") : "";
@@ -312,6 +352,28 @@ function parseRows(rows: unknown[][]): ParseResult {
         }
 
         if (tipo === "ignorar") {
+          const ml = movRaw.toLowerCase();
+          const ehProvento =
+            ml.includes("dividendo") ||
+            ml.includes("rendimento") ||
+            ml.includes("pagamento de rendiment") ||
+            ml.includes("juros") ||
+            ml.includes("amortiz");
+          if (ehProvento) {
+            const qtdProvento = parseNumber(row[colQtd]);
+            const precoCota = colPreco >= 0 ? parseNumber(row[colPreco]) : 0;
+            if (qtdProvento > 0) {
+              const atual = proventoInfoMap.get(ticker) ?? {
+                qtd: 0,
+                valorPorCota: 0,
+              };
+              proventoInfoMap.set(ticker, {
+                qtd: Math.max(atual.qtd, qtdProvento),
+                valorPorCota:
+                  precoCota > 0 ? precoCota : atual.valorPorCota,
+              });
+            }
+          }
           ignoradas++;
           continue;
         }
@@ -385,10 +447,51 @@ function parseRows(rows: unknown[][]): ParseResult {
       quantidade: Math.round(v.qtd),
       precoMedio: v.custo / v.qtd,
       proventoMensalPorCota: 0,
-    }))
-    .sort((a, b) => a.ticker.localeCompare(b.ticker));
+    }));
 
-  return { movimentos, posicoes, avisos, modo, ignoradas };
+  const estimados: string[] = [];
+  for (const [ticker, info] of proventoInfoMap.entries()) {
+    const jaTem = posicoes.find((p) => p.ticker === ticker);
+    if (jaTem) {
+      if (jaTem.proventoMensalPorCota === 0 && info.valorPorCota > 0) {
+        jaTem.proventoMensalPorCota = info.valorPorCota;
+      }
+      continue;
+    }
+    posicoes.push({
+      ticker,
+      quantidade: Math.round(info.qtd),
+      precoMedio: 0,
+      proventoMensalPorCota: info.valorPorCota,
+    });
+    estimados.push(ticker);
+  }
+  posicoes.sort((a, b) => a.ticker.localeCompare(b.ticker));
+
+  const tickersIgnorados: TickerIgnorado[] = [];
+  for (const [ticker, descricao] of naoFiiMap.entries()) {
+    tickersIgnorados.push({ ticker, motivo: "nao-fii", descricao });
+  }
+  tickersIgnorados.sort((a, b) => a.ticker.localeCompare(b.ticker));
+
+  if (naoFiiMap.size > 0) {
+    const lista = Array.from(naoFiiMap.keys()).slice(0, 5).join(", ");
+    avisos.push(
+      `Ignorei ${naoFiiMap.size} ticker(s) que não são FIIs (ações, units ou BDRs): ${lista}${
+        naoFiiMap.size > 5 ? "…" : ""
+      }.`
+    );
+  }
+  if (estimados.length > 0) {
+    const lista = estimados.slice(0, 5).join(", ");
+    avisos.push(
+      `Adicionei ${estimados.length} FII(s) deduzido(s) dos proventos (sem compra no período): ${lista}${
+        estimados.length > 5 ? "…" : ""
+      }. A quantidade vem do extrato, mas o PREÇO MÉDIO precisa ser preenchido manualmente em /carteira (essas compras são anteriores ao período baixado).`
+    );
+  }
+
+  return { movimentos, posicoes, avisos, modo, ignoradas, tickersIgnorados };
 }
 
 function heuristicScan(rows: unknown[][]): Movimento[] {
@@ -784,24 +887,80 @@ export function Importacao() {
                       <th className="px-4 py-3 text-right">Cotas</th>
                       <th className="px-4 py-3 text-right">Preço médio</th>
                       <th className="px-4 py-3 text-right">Investido</th>
+                      <th className="px-4 py-3 text-right">Provento/cota</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200">
-                    {result.posicoes.map((p) => (
-                      <tr key={p.ticker} className="text-slate-700">
-                        <td className="px-4 py-3 font-semibold text-slate-900">
-                          {p.ticker}
-                        </td>
-                        <td className="px-4 py-3 text-right">{p.quantidade}</td>
-                        <td className="px-4 py-3 text-right">
-                          {brlPrecise(p.precoMedio)}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          {brl(p.precoMedio * p.quantidade)}
-                        </td>
-                      </tr>
-                    ))}
+                    {result.posicoes.map((p) => {
+                      const estimado = p.precoMedio === 0;
+                      return (
+                        <tr
+                          key={p.ticker}
+                          className={
+                            estimado
+                              ? "bg-amber-50/40 text-slate-700"
+                              : "text-slate-700"
+                          }
+                        >
+                          <td className="px-4 py-3 font-semibold text-slate-900">
+                            <span className="flex items-center gap-2">
+                              {p.ticker}
+                              {estimado ? (
+                                <span
+                                  title="Quantidade deduzida do extrato de proventos. Preço médio precisa ser preenchido manualmente."
+                                  className="inline-flex items-center rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-800 ring-1 ring-amber-200"
+                                >
+                                  PM ?
+                                </span>
+                              ) : null}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            {p.quantidade}
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            {estimado ? (
+                              <span className="text-amber-700">
+                                a preencher
+                              </span>
+                            ) : (
+                              brlPrecise(p.precoMedio)
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            {estimado ? (
+                              <span className="text-slate-400">—</span>
+                            ) : (
+                              brlPrecise(p.precoMedio * p.quantidade)
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            {p.proventoMensalPorCota > 0 ? (
+                              brlPrecise(p.proventoMensalPorCota)
+                            ) : (
+                              <span className="text-slate-400">—</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
+                  <tfoot className="bg-slate-50 text-sm font-semibold text-slate-900">
+                    <tr>
+                      <td className="px-4 py-3" colSpan={3}>
+                        Total investido conhecido
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {brlPrecise(
+                          result.posicoes.reduce(
+                            (acc, p) => acc + p.precoMedio * p.quantidade,
+                            0
+                          )
+                        )}
+                      </td>
+                      <td className="px-4 py-3" />
+                    </tr>
+                  </tfoot>
                 </table>
               </div>
             )}
@@ -827,6 +986,61 @@ export function Importacao() {
               </button>
             </div>
           </div>
+
+          {result.tickersIgnorados.length > 0 ? (
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 className="text-sm font-semibold text-slate-900">
+                Tickers ignorados ({result.tickersIgnorados.length})
+              </h3>
+              <p className="mt-1 text-xs text-slate-500">
+                Apareceram no arquivo mas não entraram na carteira. Veja o
+                motivo de cada um:
+              </p>
+              <ul className="mt-3 divide-y divide-slate-100">
+                {result.tickersIgnorados.map((t) => (
+                  <li
+                    key={`${t.ticker}-${t.motivo}`}
+                    className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2.5"
+                  >
+                    <span className="font-mono text-sm font-semibold text-slate-900">
+                      {t.ticker}
+                    </span>
+                    {t.motivo === "nao-fii" ? (
+                      <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800 ring-1 ring-amber-200">
+                        não é FII
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-800 ring-1 ring-blue-200">
+                        só provento (compra fora do período)
+                      </span>
+                    )}
+                    {t.descricao ? (
+                      <span className="text-xs text-slate-500">
+                        {t.descricao}
+                        {t.descricao.length >= 60 ? "…" : ""}
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+              {result.tickersIgnorados.some((t) => t.motivo === "so-provento") ? (
+                <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                  <strong className="text-slate-800">Dica:</strong> para
+                  importar essas posições, baixe novamente o extrato em{" "}
+                  <a
+                    href="https://www.investidor.b3.com.br"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-blue-700 hover:underline"
+                  >
+                    investidor.b3.com.br
+                  </a>{" "}
+                  com período mais amplo (ex: últimos 5 anos) para incluir as
+                  compras originais.
+                </p>
+              ) : null}
+            </div>
+          ) : null}
         </>
       ) : null}
 

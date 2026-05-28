@@ -9,7 +9,7 @@ type NavItem = {
   href: string;
   label: string;
   icon: React.ReactNode;
-  group: "Início" | "Calculadoras" | "Carteira";
+  group: "Início" | "Calculadoras" | "Carteira" | "Aprender";
 };
 
 const items: NavItem[] = [
@@ -78,9 +78,26 @@ const items: NavItem[] = [
     group: "Carteira",
     icon: <path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14" />,
   },
+  {
+    href: "/glossario",
+    label: "Glossário",
+    group: "Aprender",
+    icon: (
+      <>
+        <path d="M4 4h12a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3z" />
+        <path d="M4 17a3 3 0 0 1 3-3h12" />
+        <path d="M9 8h6M9 12h4" />
+      </>
+    ),
+  },
 ];
 
-const groups: Array<NavItem["group"]> = ["Início", "Calculadoras", "Carteira"];
+const groups: Array<NavItem["group"]> = [
+  "Início",
+  "Calculadoras",
+  "Carteira",
+  "Aprender",
+];
 
 function NavLink({
   item,
