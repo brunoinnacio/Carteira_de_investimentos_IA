@@ -263,7 +263,7 @@ function NovaPosicaoForm({ onAdd }: { onAdd: (p: Posicao) => void }) {
               type="text"
               value={nomeRF}
               onChange={(e) => setNomeRF(e.target.value)}
-              placeholder="Ex.: Tesouro Selic 2029, CDB Banco X"
+              placeholder="Ex.: Tesouro Selic 2029, CDB Banco X, COE BTG, Previdência"
               className="h-[42px] rounded-lg border border-slate-300 bg-white px-3 text-base text-slate-900 placeholder-slate-400 shadow-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
             />
           </label>
@@ -415,8 +415,8 @@ function RendaFixaTabela({
           Renda fixa · {posicoes.length} título(s)
         </h2>
         <p className="text-xs text-slate-500">
-          Tesouro, CDB, LCI/LCA e afins. Sem cotação de mercado — o valor é o que
-          você aplicou.
+          Tesouro, CDB, LCI/LCA, COE, previdência e outras aplicações. Sem
+          cotação de mercado — o valor é o que você aplicou.
         </p>
       </div>
       <div className="overflow-x-auto">
@@ -490,6 +490,30 @@ export function CarteiraView() {
     [posicoes]
   );
 
+  // Filtro por tipo de aplicacao (Todos / FIIs / Acoes / Renda fixa).
+  const [filtro, setFiltro] = useState<"todos" | Classe>("todos");
+
+  const nFii = useMemo(
+    () => posicoesBolsa.filter((p) => classeDe(p) === "fii").length,
+    [posicoesBolsa]
+  );
+  const nAcao = useMemo(
+    () => posicoesBolsa.filter((p) => classeDe(p) === "acao").length,
+    [posicoesBolsa]
+  );
+
+  const bolsaVis = useMemo(() => {
+    if (filtro === "todos") return posicoesBolsa;
+    if (filtro === "rendaFixa") return [];
+    return posicoesBolsa.filter((p) => classeDe(p) === filtro);
+  }, [posicoesBolsa, filtro]);
+
+  const mostrarRF =
+    posicoesRF.length > 0 && (filtro === "todos" || filtro === "rendaFixa");
+
+  const tituloBolsa =
+    filtro === "fii" ? "FIIs" : filtro === "acao" ? "Ações" : "FIIs e ações";
+
   // Cotacoes so fazem sentido para ativos de bolsa (FII/acao).
   const tickers = useMemo(
     () => posicoesBolsa.map((p) => p.ticker),
@@ -515,24 +539,30 @@ export function CarteiraView() {
     [posicoes, cotacoes]
   );
 
+  // Totais do rodape da tabela seguem o que esta visivel (respeitam o filtro).
   const investidoBolsa = useMemo(
-    () => posicoesBolsa.reduce((a, p) => a + p.precoMedio * p.quantidade, 0),
-    [posicoesBolsa]
+    () => bolsaVis.reduce((a, p) => a + p.precoMedio * p.quantidade, 0),
+    [bolsaVis]
   );
   const valorMercadoBolsa = useMemo(
     () =>
-      posicoesBolsa.reduce((acc, p) => {
+      bolsaVis.reduce((acc, p) => {
         const cot = cotacoes[p.ticker]?.preco;
         if (typeof cot === "number") return acc + cot * p.quantidade;
         return acc + p.precoMedio * p.quantidade;
       }, 0),
-    [posicoesBolsa, cotacoes]
+    [bolsaVis, cotacoes]
+  );
+  const rendaBolsa = useMemo(
+    () =>
+      bolsaVis.reduce((a, p) => a + p.proventoMensalPorCota * p.quantidade, 0),
+    [bolsaVis]
   );
   const lucroBolsa = valorMercadoBolsa - investidoBolsa;
   const lucroBolsaPercent =
     investidoBolsa > 0 ? (lucroBolsa / investidoBolsa) * 100 : 0;
   const yieldBolsa =
-    investidoBolsa > 0 ? ((rendaMensal * 12) / investidoBolsa) * 100 : 0;
+    investidoBolsa > 0 ? ((rendaBolsa * 12) / investidoBolsa) * 100 : 0;
 
   const alocacao = useMemo(() => totaisPorClasse(posicoes), [posicoes]);
 
@@ -607,6 +637,47 @@ export function CarteiraView() {
 
       <NovaPosicaoForm onAdd={adicionar} />
 
+      {posicoes.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Filtrar:
+          </span>
+          {(
+            [
+              { id: "todos" as const, label: "Todos", n: posicoes.length },
+              { id: "fii" as const, label: "FIIs", n: nFii },
+              { id: "acao" as const, label: "Ações", n: nAcao },
+              { id: "rendaFixa" as const, label: "Renda fixa", n: posicoesRF.length },
+            ] as { id: "todos" | Classe; label: string; n: number }[]
+          )
+            .filter((c) => c.id === "todos" || c.n > 0)
+            .map((c) => {
+              const ativo = filtro === c.id;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => setFiltro(c.id)}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium transition ${
+                    ativo
+                      ? "border-blue-600 bg-blue-600 text-white shadow-sm"
+                      : "border-slate-300 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-800"
+                  }`}
+                >
+                  {c.label}
+                  <span
+                    className={`tabular-nums text-xs ${
+                      ativo ? "text-blue-100" : "text-slate-400"
+                    }`}
+                  >
+                    {c.n}
+                  </span>
+                </button>
+              );
+            })}
+        </div>
+      ) : null}
+
       {posicoes.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
           <p className="text-slate-700">
@@ -625,12 +696,12 @@ export function CarteiraView() {
         </div>
       ) : (
         <>
-        {posicoesBolsa.length > 0 ? (
+        {bolsaVis.length > 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3">
             <div>
               <h2 className="text-base font-semibold text-slate-900">
-                FIIs e ações · {posicoesBolsa.length} ativo(s)
+                {tituloBolsa} · {bolsaVis.length} ativo(s)
               </h2>
               <p className="text-xs text-slate-500">
                 {carregando
@@ -682,7 +753,7 @@ export function CarteiraView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
-                {posicoesBolsa.map((p) => {
+                {bolsaVis.map((p) => {
                   const invest = p.precoMedio * p.quantidade;
                   const renda = p.proventoMensalPorCota * p.quantidade;
                   const yoc =
@@ -864,7 +935,7 @@ export function CarteiraView() {
                   </td>
                   <td className="px-4 py-3" />
                   <td className="px-4 py-3 text-right tabular-nums text-blue-700">
-                    {brlPrecise(rendaMensal)}
+                    {brlPrecise(rendaBolsa)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
                     {percent(yieldBolsa)}
@@ -877,7 +948,7 @@ export function CarteiraView() {
         </div>
         ) : null}
 
-        {posicoesRF.length > 0 ? (
+        {mostrarRF ? (
           <RendaFixaTabela
             posicoes={posicoesRF}
             total={alocacao.total}

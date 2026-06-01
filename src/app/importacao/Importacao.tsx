@@ -7,6 +7,7 @@ import {
   useCarteira,
   classeDe,
   inferirClasse,
+  rfKey,
   CLASSE_LABEL,
   type Posicao,
   type Classe,
@@ -17,22 +18,28 @@ const TICKER_REGEX_GLOBAL = /\b([A-Z]{4}1[12])\b/g;
 // Ações/units/BDRs: 4 letras + 1 ou 2 dígitos (PETR4, ITUB3, TAEE11, AAPL34).
 const TICKER_ANY_REGEX = /\b([A-Z]{4}\d{1,2})\b/;
 
-async function readXlsxAsRows(file: File): Promise<unknown[][]> {
+async function readXlsxWorkbook(file: File): Promise<XLSX.WorkBook> {
   const buffer = await file.arrayBuffer();
-  const wb = XLSX.read(buffer, { type: "array", cellDates: true });
-  const sheetName =
-    wb.SheetNames.find((n) => n.toLowerCase().includes("moviment")) ??
-    wb.SheetNames[0];
-  if (!sheetName) return [];
+  return XLSX.read(buffer, { type: "array", cellDates: true });
+}
+
+function sheetToRows(wb: XLSX.WorkBook, sheetName: string): unknown[][] {
   const ws = wb.Sheets[sheetName];
   if (!ws) return [];
-  const rows = XLSX.utils.sheet_to_json<unknown[]>(ws, {
+  return XLSX.utils.sheet_to_json<unknown[]>(ws, {
     header: 1,
     defval: null,
     raw: true,
     blankrows: false,
   });
-  return rows;
+}
+
+function pickMovimentacaoRows(wb: XLSX.WorkBook): unknown[][] {
+  const sheetName =
+    wb.SheetNames.find((n) => n.toLowerCase().includes("moviment")) ??
+    wb.SheetNames[0];
+  if (!sheetName) return [];
+  return sheetToRows(wb, sheetName);
 }
 
 const FRIENDLY_ERROR =
@@ -573,6 +580,172 @@ function previewRows(rows: unknown, n = 8): string[][] {
   );
 }
 
+// --- Relatório de POSIÇÃO da B3 (abas Acoes / Fundo de Investimento / Renda Fixa / COE) ---
+
+const POSICAO_SHEETS = [
+  "acoes",
+  "fundodeinvestimento",
+  "rendafixa",
+  "coe",
+  "tesourodireto",
+];
+
+function detectPosicao(wb: XLSX.WorkBook): boolean {
+  const nomes = wb.SheetNames.map(normalizeHeader);
+  if (nomes.includes("movimentacao")) return false;
+  return nomes.some((n) => POSICAO_SHEETS.includes(n));
+}
+
+function limparNomeRF(produto: string): string {
+  return produto.replace(/\s+/g, " ").trim().slice(0, 90);
+}
+
+// Abas de ativos negociáveis (Acoes, Fundo de Investimento): cada linha é um ativo
+// com quantidade e valor atual. A Posição NÃO traz preço médio de compra, então
+// usamos o preço de fechamento como ponto de partida.
+function parseAtivoSheet(rows: unknown[][], classe: Classe): Posicao[] {
+  if (!rows.length) return [];
+  const headers = asRow(rows[0]).map((h) => String(h ?? ""));
+  const cTicker = findCol(
+    headers,
+    "Código de Negociação",
+    "Codigo de Negociacao",
+    "Ticker",
+    "Código",
+    "Codigo"
+  );
+  const cProduto = findCol(headers, "Produto");
+  const cQtd = findCol(headers, "Quantidade");
+  const cPreco = findCol(
+    headers,
+    "Preço de Fechamento",
+    "Preco de Fechamento",
+    "Preço Fechamento"
+  );
+  const cValor = findCol(
+    headers,
+    "Valor Atualizado",
+    "Valor Atualizado FECHAMENTO"
+  );
+
+  const out: Posicao[] = [];
+  for (let i = 1; i < rows.length; i++) {
+    const row = asRow(rows[i]);
+    const produto = cProduto >= 0 ? String(row[cProduto] ?? "") : "";
+    let ticker = cTicker >= 0 ? String(row[cTicker] ?? "").trim() : "";
+    if (!ticker) {
+      const m = produto.match(TICKER_ANY_REGEX);
+      if (m) ticker = m[1];
+    }
+    if (!ticker) continue;
+
+    const quantidade = parseNumber(row[cQtd]);
+    const preco = cPreco >= 0 ? parseNumber(row[cPreco]) : 0;
+    const valor = cValor >= 0 ? parseNumber(row[cValor]) : 0;
+    if (quantidade <= 0) continue;
+    // Direitos de subscrição / recibos sem valor de mercado: ignoramos.
+    if (preco <= 0 && valor <= 0) continue;
+
+    const precoMedio = preco > 0 ? preco : quantidade > 0 ? valor / quantidade : 0;
+    out.push({
+      ticker: ticker.toUpperCase(),
+      quantidade: Math.round(quantidade),
+      precoMedio,
+      proventoMensalPorCota: 0,
+      classe,
+    });
+  }
+  out.sort((a, b) => a.ticker.localeCompare(b.ticker));
+  return out;
+}
+
+// Abas sem ticker de mercado (Renda Fixa, COE): viram posições de renda fixa
+// pelo valor atual (MTM, ou curva/fechamento como fallback).
+function parseRendaFixaSheet(rows: unknown[][]): Posicao[] {
+  if (!rows.length) return [];
+  const headers = asRow(rows[0]).map((h) => String(h ?? ""));
+  const cProduto = findCol(headers, "Produto", "Emissor");
+  const cValores = [
+    findCol(headers, "Valor Atualizado MTM"),
+    findCol(headers, "Valor Atualizado FECHAMENTO"),
+    findCol(headers, "Valor Atualizado CURVA"),
+    findCol(headers, "Valor Aplicado"),
+    findCol(headers, "Valor Atualizado"),
+  ].filter((c) => c >= 0);
+
+  const out: Posicao[] = [];
+  for (let i = 1; i < rows.length; i++) {
+    const row = asRow(rows[i]);
+    const produto = cProduto >= 0 ? String(row[cProduto] ?? "").trim() : "";
+    if (!produto || /^total$/i.test(produto)) continue;
+
+    let valor = 0;
+    for (const c of cValores) {
+      const v = parseNumber(row[c]);
+      if (v > 0) {
+        valor = v;
+        break;
+      }
+    }
+    if (valor <= 0) continue;
+
+    const nome = limparNomeRF(produto);
+    out.push({
+      ticker: rfKey(nome),
+      nome,
+      quantidade: 1,
+      precoMedio: valor,
+      proventoMensalPorCota: 0,
+      classe: "rendaFixa",
+    });
+  }
+  return out;
+}
+
+function parsePosicao(wb: XLSX.WorkBook): ParseResult {
+  const byNorm = new Map<string, string>();
+  for (const n of wb.SheetNames) byNorm.set(normalizeHeader(n), n);
+  const rowsOf = (key: string): unknown[][] => {
+    const real = byNorm.get(key);
+    return real ? sheetToRows(wb, real) : [];
+  };
+
+  const acoes = parseAtivoSheet(rowsOf("acoes"), "acao");
+  const fundos = parseAtivoSheet(rowsOf("fundodeinvestimento"), "fii");
+  const rf = [
+    ...parseRendaFixaSheet(rowsOf("rendafixa")),
+    ...parseRendaFixaSheet(rowsOf("coe")),
+    ...parseRendaFixaSheet(rowsOf("tesourodireto")),
+  ];
+
+  const posicoes = [...fundos, ...acoes, ...rf];
+
+  const avisos: string[] = [];
+  const totalRF = rf.reduce((a, p) => a + p.precoMedio * p.quantidade, 0);
+  avisos.push(
+    `Importado da Posição da B3: ${fundos.length} FII(s), ${acoes.length} ação(ões) e ${rf.length} título(s) de renda fixa/COE.`
+  );
+  if (fundos.length + acoes.length > 0) {
+    avisos.push(
+      "A Posição da B3 traz o VALOR ATUAL, não o preço médio de compra. Usei o preço de fechamento como preço médio inicial — ajuste na carteira se quiser o custo real de cada ativo."
+    );
+  }
+  if (rf.length > 0) {
+    avisos.push(
+      `Renda fixa/COE somam ${brlPrecise(totalRF)} pelo valor atualizado (não têm cotação de mercado).`
+    );
+  }
+
+  return {
+    movimentos: [],
+    posicoes,
+    avisos,
+    modo: "header",
+    ignoradas: 0,
+    tickersIgnorados: [],
+  };
+}
+
 export function Importacao() {
   const { substituir } = useCarteira();
   const [busy, setBusy] = useState(false);
@@ -594,19 +767,34 @@ export function Importacao() {
     const attempts: ReadDiagnostics["attempts"] = [];
     let rows: unknown[][] | null = null;
     let source: ReadSource = "none";
+    let posicaoResult: ParseResult | null = null;
 
     try {
       if (!isCsvByExt) {
         try {
-          const xlsxRows = await readXlsxAsRows(file);
-          attempts.push({
-            kind: "xlsx",
-            ok: true,
-            message: `Lido como XLSX (${xlsxRows.length} linhas).`,
-          });
-          if (xlsxRows.length > 0) {
-            rows = xlsxRows;
+          const wb = await readXlsxWorkbook(file);
+          if (detectPosicao(wb)) {
+            posicaoResult = parsePosicao(wb);
+            rows = sheetToRows(wb, wb.SheetNames[0]);
             source = "xlsx";
+            attempts.push({
+              kind: "xlsx",
+              ok: true,
+              message: `Relatório de POSIÇÃO detectado (abas: ${wb.SheetNames.join(
+                ", "
+              )}). ${posicaoResult.posicoes.length} ativo(s).`,
+            });
+          } else {
+            const xlsxRows = pickMovimentacaoRows(wb);
+            attempts.push({
+              kind: "xlsx",
+              ok: true,
+              message: `Lido como XLSX/Movimentação (${xlsxRows.length} linhas).`,
+            });
+            if (xlsxRows.length > 0) {
+              rows = xlsxRows;
+              source = "xlsx";
+            }
           }
         } catch (e) {
           const msg = e instanceof Error ? e.message : String(e);
@@ -654,13 +842,13 @@ export function Importacao() {
       setDiag(diagBase);
       setShowDiag(true);
 
-      if (!rows || rows.length === 0) {
+      if (!posicaoResult && (!rows || rows.length === 0)) {
         setError(FRIENDLY_ERROR);
         return;
       }
 
       try {
-        const parsed = parseRows(rows);
+        const parsed = posicaoResult ?? parseRows(rows as unknown[][]);
         setResult(parsed);
       } catch (e) {
         console.error("[importacao] erro ao processar linhas:", e);
@@ -731,8 +919,8 @@ export function Importacao() {
             : "Clique para escolher o arquivo da B3"}
         </p>
         <p className="text-xs text-slate-500">
-          Aceita .xlsx, .xls e .csv · arquivo de Movimentação da Área do
-          Investidor
+          Aceita .xlsx, .xls e .csv · relatório de <strong>Posição</strong>{" "}
+          (recomendado, copia fiel) ou de Movimentação da Área do Investidor
         </p>
       </label>
 
@@ -892,7 +1080,8 @@ export function Importacao() {
                   </thead>
                   <tbody className="divide-y divide-slate-200">
                     {result.posicoes.map((p) => {
-                      const estimado = p.precoMedio === 0;
+                      const ehRF = classeDe(p) === "rendaFixa";
+                      const estimado = !ehRF && p.precoMedio === 0;
                       return (
                         <tr
                           key={p.ticker}
@@ -904,11 +1093,13 @@ export function Importacao() {
                         >
                           <td className="px-4 py-3 font-semibold text-slate-900">
                             <span className="flex items-center gap-2">
-                              {p.ticker}
+                              {ehRF ? p.nome ?? p.ticker.replace(/^RF:/, "") : p.ticker}
                               <span
                                 className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ring-1 ${
                                   classeDe(p) === "acao"
                                     ? "bg-violet-100 text-violet-800 ring-violet-200"
+                                    : ehRF
+                                    ? "bg-teal-100 text-teal-800 ring-teal-200"
                                     : "bg-blue-100 text-blue-800 ring-blue-200"
                                 }`}
                               >
@@ -925,10 +1116,16 @@ export function Importacao() {
                             </span>
                           </td>
                           <td className="px-4 py-3 text-right">
-                            {p.quantidade}
+                            {ehRF ? (
+                              <span className="text-slate-400">—</span>
+                            ) : (
+                              p.quantidade
+                            )}
                           </td>
                           <td className="px-4 py-3 text-right">
-                            {estimado ? (
+                            {ehRF ? (
+                              <span className="text-slate-400">—</span>
+                            ) : estimado ? (
                               <span className="text-amber-700">
                                 a preencher
                               </span>
