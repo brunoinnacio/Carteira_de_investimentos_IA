@@ -5,7 +5,15 @@ import { useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { sair } from "@/app/actions/auth";
 
-type UserLite = { id: string; email: string | null };
+type UserLite = { id: string; email: string | null; nome: string | null };
+
+function nomeDe(u: { user_metadata?: Record<string, unknown> } | null): string | null {
+  const full =
+    typeof u?.user_metadata?.full_name === "string"
+      ? (u.user_metadata.full_name as string).trim()
+      : "";
+  return full || null;
+}
 
 export function UserMenu() {
   const [user, setUser] = useState<UserLite | null>(null);
@@ -17,7 +25,11 @@ export function UserMenu() {
     let mounted = true;
     supabase.auth.getUser().then(({ data }) => {
       if (!mounted) return;
-      setUser(data.user ? { id: data.user.id, email: data.user.email ?? null } : null);
+      setUser(
+        data.user
+          ? { id: data.user.id, email: data.user.email ?? null, nome: nomeDe(data.user) }
+          : null
+      );
       setLoading(false);
     });
 
@@ -25,7 +37,11 @@ export function UserMenu() {
       if (!mounted) return;
       setUser(
         session?.user
-          ? { id: session.user.id, email: session.user.email ?? null }
+          ? {
+              id: session.user.id,
+              email: session.user.email ?? null,
+              nome: nomeDe(session.user),
+            }
           : null
       );
     });
@@ -88,23 +104,27 @@ export function UserMenu() {
     );
   }
 
-  const inicial = (user.email ?? "?").slice(0, 1).toUpperCase();
+  const nomeExibido = user.nome ?? user.email ?? "Conectado";
+  const inicial = (user.nome ?? user.email ?? "?").slice(0, 1).toUpperCase();
 
   return (
     <div className="rounded-lg bg-white/5 p-3">
-      <div className="flex items-center gap-3">
+      <Link
+        href="/perfil"
+        className="flex items-center gap-3 rounded-md p-1 -m-1 transition hover:bg-white/5"
+      >
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
           {inicial}
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-white">
-            {user.email ?? "Conectado"}
+            {nomeExibido}
           </p>
           <p className="text-[11px] uppercase tracking-wider text-slate-400">
-            Conta ativa
+            Ver perfil
           </p>
         </div>
-      </div>
+      </Link>
       <form action={sair}>
         <button
           type="submit"

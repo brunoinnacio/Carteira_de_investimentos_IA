@@ -53,10 +53,14 @@ export async function cadastrar(
   _prev: AuthResult | null,
   formData: FormData
 ): Promise<AuthResult> {
+  const nome = String(formData.get("nome") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   const password2 = String(formData.get("password2") ?? "");
 
+  if (nome.length < 2) {
+    return { ok: false, message: "Informe seu nome." };
+  }
   if (!emailValido(email)) {
     return { ok: false, message: "Informe um email válido." };
   }
@@ -74,6 +78,7 @@ export async function cadastrar(
     password,
     options: {
       emailRedirectTo: `${origin}/auth/callback?next=/carteira`,
+      data: { full_name: nome },
     },
   });
 
@@ -102,6 +107,38 @@ export async function sair() {
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
   redirect("/");
+}
+
+export async function atualizarPerfil(
+  _prev: AuthResult | null,
+  formData: FormData
+): Promise<AuthResult> {
+  const nome = String(formData.get("nome") ?? "").trim();
+
+  if (nome.length < 2) {
+    return { ok: false, message: "Informe seu nome (ao menos 2 letras)." };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { ok: false, message: "Você precisa estar logado." };
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    data: { full_name: nome },
+  });
+
+  if (error) {
+    return {
+      ok: false,
+      message: "Não foi possível salvar agora. Tente novamente.",
+    };
+  }
+
+  return { ok: true, message: "Perfil atualizado!" };
 }
 
 export async function esqueciSenha(
