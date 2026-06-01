@@ -48,6 +48,8 @@ export const FIIS: FIISeed[] = [
   { ticker: "RECR11", nome: "REC Recebíveis", segmento: "Papel", vpa: 9.5, proventoMensal: 0.1, liquidez: "Média" },
   { ticker: "IRDM11", nome: "Iridium Recebíveis", segmento: "Papel", vpa: 85, proventoMensal: 0.85, liquidez: "Alta" },
   { ticker: "VGIP11", nome: "Valora CRI Índices", segmento: "Papel", vpa: 92, proventoMensal: 1.0, liquidez: "Média" },
+  { ticker: "VGIR11", nome: "Valora CRI CDI", segmento: "Papel", vpa: 9.8, proventoMensal: 0.1, liquidez: "Média" },
+  { ticker: "VRTA11", nome: "Fator Verità", segmento: "Papel", vpa: 88, proventoMensal: 0.7, liquidez: "Média" },
 
   // --- Logística ---
   { ticker: "HGLG11", nome: "CSHG Logística", segmento: "Logística", vpa: 160, proventoMensal: 1.1, liquidez: "Alta" },
@@ -71,6 +73,8 @@ export const FIIS: FIISeed[] = [
   { ticker: "TRXF11", nome: "TRX Real Estate", segmento: "Renda Urbana", vpa: 100, proventoMensal: 0.85, liquidez: "Média" },
   { ticker: "KNRI11", nome: "Kinea Renda Imobiliária", segmento: "Híbrido", vpa: 160, proventoMensal: 0.95, liquidez: "Alta" },
   { ticker: "RZTR11", nome: "Riza Terrax", segmento: "Agro", vpa: 100, proventoMensal: 1.0, liquidez: "Média" },
+  { ticker: "KNCA11", nome: "Kinea Crédito Agro", segmento: "Agro", vpa: 98, proventoMensal: 1.0, liquidez: "Média" },
+  { ticker: "RZAG11", nome: "Riza Agro", segmento: "Agro", vpa: 9.5, proventoMensal: 0.09, liquidez: "Média" },
 
   // --- Fundo de Fundos ---
   { ticker: "RBRF11", nome: "RBR Alpha (FoF)", segmento: "Fundo de Fundos", vpa: 62, proventoMensal: 0.55, liquidez: "Média" },
