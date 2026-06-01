@@ -74,46 +74,31 @@ export function CarteiraSyncBanner() {
   }
 
   return (
-    <div className="mb-5 rounded-xl border border-blue-200 bg-blue-50 p-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-3">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-5 w-5 shrink-0 text-blue-600"
-            aria-hidden
-          >
-            <rect x="3" y="11" width="18" height="10" rx="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
-          <p className="text-sm text-blue-900">
-            <span className="font-semibold">
-              Você está usando sem conta.
-            </span>{" "}
-            Sua carteira fica salva só neste navegador e some se você trocar de
-            aparelho ou limpar o cache. Crie uma conta grátis para acessar de
-            qualquer lugar — o que você já montou é levado junto.
-          </p>
-        </div>
-        <div className="flex shrink-0 gap-2">
-          <Link
-            href="/cadastro"
-            className="inline-flex h-9 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-          >
-            Criar conta grátis
-          </Link>
-          <Link
-            href="/entrar"
-            className="inline-flex h-9 items-center justify-center rounded-lg border border-blue-600 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-600 hover:text-white"
-          >
-            Entrar
-          </Link>
-        </div>
-      </div>
+    <div className="mb-5 flex items-center gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-600">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-4 w-4 shrink-0 text-slate-400"
+        aria-hidden
+      >
+        <rect x="3" y="11" width="18" height="10" rx="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      </svg>
+      <p>
+        Usando <span className="font-medium text-slate-800">sem conta</span> — a
+        carteira fica salva só neste navegador.{" "}
+        <Link
+          href="/cadastro"
+          className="font-semibold text-blue-700 underline-offset-2 hover:underline"
+        >
+          Criar conta grátis
+        </Link>{" "}
+        para sincronizar e acessar de qualquer lugar.
+      </p>
     </div>
   );
 }
