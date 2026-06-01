@@ -9,6 +9,12 @@ export function SiteFooter() {
         </p>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <Link
+            href="/guias"
+            className="hover:text-slate-700 hover:underline"
+          >
+            Guias
+          </Link>
+          <Link
             href="/glossario"
             className="hover:text-slate-700 hover:underline"
           >

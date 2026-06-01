@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { PUBLIC_ROUTES, SITE_URL } from "@/lib/site";
 import { MODULOS } from "@/data/trilha";
+import { GUIAS } from "@/data/guias";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -19,5 +20,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...rotasFixas, ...rotasModulos];
+  const rotasGuias: MetadataRoute.Sitemap = GUIAS.map((g) => ({
+    url: `${SITE_URL}/guias/${g.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.8,
+  }));
+
+  return [...rotasFixas, ...rotasModulos, ...rotasGuias];
 }

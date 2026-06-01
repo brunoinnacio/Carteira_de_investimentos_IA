@@ -122,6 +122,17 @@ export default function Home() {
               Ver tipos de investimento
             </Link>
           </div>
+          <p className="mt-3 text-sm text-blue-900/70">
+            Com pressa? Veja os{" "}
+            <Link
+              href="/guias"
+              className="font-semibold text-blue-700 underline hover:text-blue-800"
+            >
+              guias rápidos
+            </Link>{" "}
+            — &ldquo;como começar do zero&rdquo;, &ldquo;FII ou renda
+            fixa&rdquo; e mais.
+          </p>
         </div>
       </section>
 
