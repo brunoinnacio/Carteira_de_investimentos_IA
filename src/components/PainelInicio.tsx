@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import { useCarteira, totaisPorClasse, type Classe } from "@/lib/carteira";
+import { CARTEIRA_EXEMPLO } from "@/data/carteiraExemplo";
 import { brl, percent } from "@/lib/format";
 
 const META: Record<Classe, { label: string; cor: string }> = {
@@ -72,11 +74,27 @@ function Donut({
 }
 
 export function PainelInicio() {
-  const { posicoes, hydrated } = useCarteira();
+  const { posicoes, hydrated, substituir } = useCarteira();
+  const router = useRouter();
+  const [carregandoExemplo, setCarregandoExemplo] = useState(false);
   const { porClasse, total } = useMemo(
     () => totaisPorClasse(posicoes),
     [posicoes]
   );
+
+  function carregarExemplo() {
+    if (
+      posicoes.length > 0 &&
+      !window.confirm(
+        "Isso vai substituir sua carteira atual por uma de exemplo. Deseja continuar?"
+      )
+    ) {
+      return;
+    }
+    setCarregandoExemplo(true);
+    substituir(CARTEIRA_EXEMPLO);
+    router.push("/carteira");
+  }
 
   const temCarteira = total > 0;
   const fonte = temCarteira ? porClasse : EXEMPLO;
@@ -150,17 +168,21 @@ export function PainelInicio() {
               </Link>
             ) : (
               <>
+                <button
+                  type="button"
+                  onClick={carregarExemplo}
+                  disabled={carregandoExemplo}
+                  className="inline-flex h-10 flex-1 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                >
+                  {carregandoExemplo
+                    ? "Carregando…"
+                    : "Ver demonstração (R$ 100 mil) →"}
+                </button>
                 <Link
                   href="/importacao"
-                  className="inline-flex h-10 flex-1 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-                >
-                  Importar minha carteira →
-                </Link>
-                <Link
-                  href="/carteira"
                   className="inline-flex h-10 flex-1 items-center justify-center rounded-lg border border-blue-600 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-600 hover:text-white"
                 >
-                  Montar do zero
+                  Importar minha carteira
                 </Link>
               </>
             )}

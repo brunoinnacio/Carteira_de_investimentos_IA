@@ -20,6 +20,7 @@ import {
   type Classe,
 } from "@/lib/carteira";
 import { useCotacoes } from "@/lib/cotacoes";
+import { CARTEIRA_EXEMPLO } from "@/data/carteiraExemplo";
 import { brl, brlPrecise, percent } from "@/lib/format";
 
 type EditField = "precoMedio" | "quantidade" | "proventoMensalPorCota";
@@ -473,7 +474,7 @@ function RendaFixaTabela({
 }
 
 export function CarteiraView() {
-  const { posicoes, hydrated, adicionar, remover, limpar, salvar } =
+  const { posicoes, hydrated, adicionar, remover, limpar, salvar, substituir } =
     useCarteira();
   const { investido, rendaMensal } = totaisCarteira(posicoes);
   const yieldCarteira =
@@ -693,6 +694,18 @@ export function CarteiraView() {
             </Link>
             .
           </p>
+          <div className="mt-5 border-t border-slate-100 pt-5">
+            <p className="text-sm text-slate-500">
+              Só quer ver como funciona?
+            </p>
+            <button
+              type="button"
+              onClick={() => substituir(CARTEIRA_EXEMPLO)}
+              className="mt-2 inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+            >
+              Carregar carteira de exemplo (R$ 100 mil) →
+            </button>
+          </div>
         </div>
       ) : (
         <>
