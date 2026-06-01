@@ -1,5 +1,5 @@
 -- ============================================================
--- Carteira na nuvem (FII Brasil)
+-- Carteira na nuvem (Renda-se)
 --
 -- Rode UMA vez no Supabase:
 --   Dashboard -> SQL Editor -> New query -> cole tudo -> Run.

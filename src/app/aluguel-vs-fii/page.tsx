@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AluguelVsFii } from "./AluguelVsFii";
 
 export const metadata: Metadata = {
-  title: "Aluguel direto ou Fundos Imobiliários? · Comparador · FII Brasil",
+  title: "Aluguel direto ou Fundos Imobiliários? · Comparador",
   description:
     "Comparador grátis: vale mais comprar um imóvel para alugar ou colocar o mesmo dinheiro em Fundos Imobiliários? Veja a renda líquida lado a lado.",
 };

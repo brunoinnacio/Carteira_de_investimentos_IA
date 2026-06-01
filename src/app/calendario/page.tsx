@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Calendario } from "./Calendario";
 
 export const metadata: Metadata = {
-  title: "Calendário de proventos · FII Brasil",
+  title: "Calendário de proventos",
   description:
     "Projeção de quanto você vai receber de proventos dos seus FIIs nos próximos 12 meses, com base na sua carteira.",
 };

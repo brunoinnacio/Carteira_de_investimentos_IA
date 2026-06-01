@@ -3,7 +3,7 @@ import { CalculadoraRenda } from "./CalculadoraRenda";
 
 export const metadata: Metadata = {
   title:
-    "Quanto investir para viver de FII? · Calculadora grátis · FII Brasil",
+    "Quanto investir para viver de FII? · Calculadora grátis",
   description:
     "Descubra exatamente quanto você precisa investir em Fundos Imobiliários para receber a renda mensal que você quer. Calculadora grátis, sem cadastro.",
 };

@@ -6,8 +6,8 @@ import { FormCadastro } from "./FormCadastro";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Criar conta · FII Brasil",
-  description: "Crie sua conta gratuita no FII Brasil.",
+  title: "Criar conta",
+  description: "Crie sua conta gratuita no Renda-se.",
 };
 
 export default async function Page() {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Importacao } from "./Importacao";
 
 export const metadata: Metadata = {
-  title: "Importar extrato da B3 · FII Brasil",
+  title: "Importar extrato da B3",
   description:
     "Suba o extrato em XLSX da Área do Investidor da B3 e o sistema monta sua carteira de FIIs automaticamente.",
 };

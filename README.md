@@ -1,4 +1,4 @@
-# FII Brasil
+# Renda-se
 
 Plataforma web para investidores em Fundos Imobiliários (FIIs) brasileiros:
 calculadoras de aporte, simulador "bola de neve", comparador

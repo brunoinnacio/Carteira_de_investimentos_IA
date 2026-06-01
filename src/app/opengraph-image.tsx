@@ -1,9 +1,11 @@
 import { ImageResponse } from "next/og";
+import { SITE_NAME, SITE_SHORT, SITE_URL } from "@/lib/site";
 
-export const alt =
-  "FII Brasil · Calculadoras e Radar de Fundos Imobiliários";
+export const alt = `${SITE_NAME} · Aprenda a investir do zero`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+const HOST = SITE_URL.replace(/^https?:\/\//, "");
 
 export default function OgImage() {
   return new ImageResponse(
@@ -35,7 +37,7 @@ export default function OgImage() {
               fontWeight: 700,
             }}
           >
-            FII
+            {SITE_SHORT}
           </div>
           <div
             style={{
@@ -45,7 +47,7 @@ export default function OgImage() {
               letterSpacing: "2px",
             }}
           >
-            FII BRASIL
+            {SITE_NAME.toUpperCase()}
           </div>
         </div>
 
@@ -59,7 +61,7 @@ export default function OgImage() {
               maxWidth: "1000px",
             }}
           >
-            Viva de renda com Fundos Imobiliários
+            Aprenda a investir do zero, sem economês
           </div>
           <div
             style={{
@@ -68,8 +70,8 @@ export default function OgImage() {
               maxWidth: "920px",
             }}
           >
-            Calculadoras, radar de oportunidades, calendário de proventos e
-            glossário. Grátis e sem cadastro.
+            FIIs, ações, renda fixa e mais — com calculadoras, guias e
+            linguagem simples. Grátis.
           </div>
         </div>
 
@@ -81,7 +83,7 @@ export default function OgImage() {
             fontSize: "24px",
           }}
         >
-          <span>fiibrasil.vercel.app</span>
+          <span>{HOST}</span>
         </div>
       </div>
     ),

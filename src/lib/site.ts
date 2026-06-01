@@ -2,10 +2,16 @@ export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
   "https://fiibrasil.vercel.app";
 
-export const SITE_NAME = "FII Brasil";
+export const SITE_NAME = "Renda-se";
+
+/** Sigla curta usada no "logo" (quadradinho azul). */
+export const SITE_SHORT = "R";
+
+/** Frase curta sob o nome, no topo do menu. */
+export const SITE_TAGLINE = "Aprenda a investir";
 
 export const SITE_DESCRIPTION =
-  "Aprenda a viver de renda passiva com Fundos Imobiliários (FIIs). Calculadoras, calendário de proventos, radar de oportunidades e glossário. Grátis e sem cadastro.";
+  "Aprenda a investir do zero — FIIs, ações, renda fixa e mais — com calculadoras, guias e linguagem simples. Sem economês, sem golpe. Grátis.";
 
 /** Rotas públicas indexáveis, com prioridade relativa para o sitemap. */
 export const PUBLIC_ROUTES: Array<{ path: string; priority: number }> = [

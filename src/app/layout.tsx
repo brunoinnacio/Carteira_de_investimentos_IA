@@ -17,25 +17,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const TITLE = "FII Brasil · Calculadoras e Radar de Fundos Imobiliários";
+const TITLE = `${SITE_NAME} · Aprenda a investir do zero, sem economês`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
-    template: "%s · FII Brasil",
+    template: `%s · ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   keywords: [
-    "FII",
-    "fundos imobiliários",
+    "como investir",
+    "investir do zero",
+    "investimentos para iniciantes",
     "renda passiva",
-    "investimentos",
+    "renda fixa",
+    "ações",
+    "fundos imobiliários",
+    "FII",
     "dividendos",
-    "calculadora FII",
-    "dividend yield",
-    "proventos",
   ],
   authors: [{ name: "Bruno Inácio" }],
   alternates: {

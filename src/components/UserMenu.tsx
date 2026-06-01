@@ -46,19 +46,44 @@ export function UserMenu() {
 
   if (!user) {
     return (
-      <div className="grid gap-2">
-        <Link
-          href="/entrar"
-          className="rounded-lg bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500"
-        >
-          Entrar
-        </Link>
+      <div className="rounded-xl border border-blue-500/30 bg-gradient-to-br from-blue-600/20 to-blue-500/5 p-3.5">
+        <div className="flex items-center gap-2">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-4 w-4 text-blue-300"
+            aria-hidden
+          >
+            <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25" />
+            <path d="m8 16 4-4 4 4M12 12v9" />
+          </svg>
+          <p className="text-sm font-semibold text-white">
+            Salve sua carteira
+          </p>
+        </div>
+        <p className="mt-1 text-xs leading-relaxed text-slate-300">
+          Crie uma conta grátis e acesse seus investimentos de qualquer
+          aparelho.
+        </p>
         <Link
           href="/cadastro"
-          className="rounded-lg border border-white/20 px-3 py-2 text-center text-sm font-medium text-slate-100 transition hover:bg-white/10"
+          className="mt-3 flex items-center justify-center rounded-lg bg-blue-600 px-3 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500"
         >
           Criar conta grátis
         </Link>
+        <p className="mt-2 text-center text-xs text-slate-400">
+          Já tem conta?{" "}
+          <Link
+            href="/entrar"
+            className="font-semibold text-blue-300 transition hover:text-blue-200"
+          >
+            Entrar
+          </Link>
+        </p>
       </div>
     );
   }

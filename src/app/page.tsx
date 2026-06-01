@@ -161,7 +161,7 @@ export default function Home() {
         <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:py-16">
           <div className="mb-8 max-w-2xl">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-              Para quem é o FII Brasil
+              Para quem é o Renda-se
             </h2>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

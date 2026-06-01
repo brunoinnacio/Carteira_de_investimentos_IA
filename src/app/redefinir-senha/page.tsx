@@ -5,7 +5,7 @@ import { FormRedefinirSenha } from "./FormRedefinirSenha";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Redefinir senha · FII Brasil",
+  title: "Redefinir senha",
   description: "Defina uma nova senha para sua conta.",
 };
 

@@ -4,7 +4,7 @@ import { AuthCard } from "@/components/AuthCard";
 import { FormEsqueciSenha } from "./FormEsqueciSenha";
 
 export const metadata: Metadata = {
-  title: "Esqueci minha senha · FII Brasil",
+  title: "Esqueci minha senha",
   description: "Receba um link por email para redefinir sua senha.",
 };
 

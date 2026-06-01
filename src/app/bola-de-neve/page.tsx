@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BolaDeNeve } from "./BolaDeNeve";
 
 export const metadata: Metadata = {
-  title: "Simulador de Bola de Neve em FIIs · FII Brasil",
+  title: "Simulador de Bola de Neve em FIIs",
   description:
     "Veja sua renda mensal de Fundos Imobiliários crescer mês a mês com o efeito bola de neve dos juros compostos. Simulador grátis.",
 };

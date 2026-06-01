@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { UserMenu } from "@/components/UserMenu";
+import { SITE_NAME, SITE_SHORT, SITE_TAGLINE } from "@/lib/site";
 
 type NavItem = {
   href: string;
@@ -202,13 +203,13 @@ function NavContent({
         onClick={onNavigate}
         className="flex items-center gap-2.5 px-6 py-5"
       >
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 font-bold text-white shadow-sm">
-          FII
+        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white shadow-sm">
+          {SITE_SHORT}
         </span>
         <div className="leading-tight">
-          <p className="text-base font-semibold text-white">FII Brasil</p>
+          <p className="text-base font-semibold text-white">{SITE_NAME}</p>
           <p className="text-[11px] uppercase tracking-wider text-slate-400">
-            Renda passiva
+            {SITE_TAGLINE}
           </p>
         </div>
       </Link>
@@ -271,11 +272,11 @@ export function SiteSidebar() {
 
       <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 font-bold text-white">
-            FII
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
+            {SITE_SHORT}
           </span>
           <span className="text-base font-semibold text-slate-900">
-            FII Brasil
+            {SITE_NAME}
           </span>
         </Link>
         <button

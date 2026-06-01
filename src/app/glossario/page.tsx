@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Glossario } from "./Glossario";
 
 export const metadata: Metadata = {
-  title: "Glossário de FIIs · FII Brasil",
+  title: "Glossário de FIIs",
   description:
     "Dicionário de termos do mercado de Fundos Imobiliários explicados de forma simples para iniciantes.",
 };

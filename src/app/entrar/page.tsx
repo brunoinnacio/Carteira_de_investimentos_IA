@@ -6,8 +6,8 @@ import { FormEntrar } from "./FormEntrar";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Entrar · FII Brasil",
-  description: "Acesse sua conta no FII Brasil.",
+  title: "Entrar",
+  description: "Acesse sua conta no Renda-se.",
 };
 
 type PageProps = {

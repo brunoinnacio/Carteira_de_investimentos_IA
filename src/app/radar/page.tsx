@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Radar } from "./Radar";
 
 export const metadata: Metadata = {
-  title: "Radar de FIIs · esse fundo está caro ou barato? · FII Brasil",
+  title: "Radar de FIIs · esse fundo está caro ou barato?",
   description:
     "Cole os indicadores de um FII e descubra na hora se P/VP, Dividend Yield e Yield on Cost estão atrativos, justos ou caros.",
 };

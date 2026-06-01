@@ -3,7 +3,7 @@ import { CarteiraView } from "./CarteiraView";
 import { CarteiraSyncBanner } from "@/components/CarteiraSyncBanner";
 
 export const metadata: Metadata = {
-  title: "Minha Carteira de FIIs · FII Brasil",
+  title: "Minha carteira",
   description:
     "Cadastre seus FIIs, quantidade e provento médio mensal. Use sem cadastro (salvo no navegador) ou crie uma conta grátis para sincronizar e acessar de qualquer lugar.",
 };
