@@ -1,4 +1,4 @@
-# Renda-se
+# Bolsa Cheia
 
 Plataforma web para investidores em Fundos Imobiliários (FIIs) brasileiros:
 calculadoras de aporte, simulador "bola de neve", comparador

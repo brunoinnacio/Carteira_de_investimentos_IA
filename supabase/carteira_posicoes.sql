@@ -1,5 +1,5 @@
 -- ============================================================
--- Carteira na nuvem (Renda-se)
+-- Carteira na nuvem (Bolsa Cheia)
 --
 -- Rode UMA vez no Supabase:
 --   Dashboard -> SQL Editor -> New query -> cole tudo -> Run.

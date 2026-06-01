@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Aviso legal e isenção de responsabilidade",
   description:
-    "Renda-se é uma ferramenta educacional. Não constitui recomendação de investimento. Entenda os limites de uso e como tratamos seus dados.",
+    "Bolsa Cheia é uma ferramenta educacional. Não constitui recomendação de investimento. Entenda os limites de uso e como tratamos seus dados.",
   alternates: { canonical: "/aviso-legal" },
 };
 
@@ -42,7 +42,7 @@ export default function Page() {
         <div className="flex flex-col gap-6">
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
             <p className="font-semibold">
-              O Renda-se é uma ferramenta educacional. Nada aqui é
+              A Bolsa Cheia é uma ferramenta educacional. Nada aqui é
               recomendação de investimento.
             </p>
             <p className="mt-1.5">
@@ -54,7 +54,7 @@ export default function Page() {
 
           <Bloco titulo="Não somos analistas nem consultores de valores mobiliários">
             <p>
-              O Renda-se não é uma instituição financeira, corretora,
+              A Bolsa Cheia não é uma instituição financeira, corretora,
               consultoria ou casa de análise, e não possui profissionais
               certificados (CNPI) emitindo recomendações. Conforme a Resolução
               CVM nº 20/2021, recomendações de investimento personalizadas só

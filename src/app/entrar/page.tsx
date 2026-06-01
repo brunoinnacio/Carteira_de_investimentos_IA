@@ -7,7 +7,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Entrar",
-  description: "Acesse sua conta no Renda-se.",
+  description: "Acesse sua conta na Bolsa Cheia.",
 };
 
 type PageProps = {

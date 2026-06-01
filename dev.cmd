@@ -5,7 +5,7 @@ set "PATH=%NODE_DIR%;%PATH%"
 cd /d "%~dp0"
 
 echo ============================================================
-echo  Renda-se - Servidor de Desenvolvimento Local
+echo  Bolsa Cheia - Servidor de Desenvolvimento Local
 echo ============================================================
 echo.
 echo  Node:  

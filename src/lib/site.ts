@@ -2,13 +2,13 @@ export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
   "https://fiibrasil.vercel.app";
 
-export const SITE_NAME = "Renda-se";
+export const SITE_NAME = "Bolsa Cheia";
 
 /** Sigla curta usada no "logo" (quadradinho azul). */
-export const SITE_SHORT = "R";
+export const SITE_SHORT = "B";
 
 /** Frase curta sob o nome, no topo do menu. */
-export const SITE_TAGLINE = "Renda-se a investir";
+export const SITE_TAGLINE = "Aprenda a investir";
 
 export const SITE_DESCRIPTION =
   "Aprenda a investir do zero — FIIs, ações, renda fixa e mais — com calculadoras, guias e linguagem simples. Sem economês, sem golpe. Grátis.";

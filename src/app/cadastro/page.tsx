@@ -7,7 +7,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Criar conta",
-  description: "Crie sua conta gratuita no Renda-se.",
+  description: "Crie sua conta gratuita na Bolsa Cheia.",
 };
 
 export default async function Page() {

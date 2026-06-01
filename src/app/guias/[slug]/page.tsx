@@ -48,8 +48,8 @@ export default async function Page({
         inLanguage: "pt-BR",
         dateModified: g.atualizadoEm,
         mainEntityOfPage: `${SITE_URL}/guias/${g.slug}`,
-        author: { "@type": "Organization", name: "Renda-se" },
-        publisher: { "@type": "Organization", name: "Renda-se" },
+        author: { "@type": "Organization", name: "Bolsa Cheia" },
+        publisher: { "@type": "Organization", name: "Bolsa Cheia" },
       },
       {
         "@type": "FAQPage",
