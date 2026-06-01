@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import { useEffect, useState } from "react";
 
 type Broker = {
@@ -119,6 +120,7 @@ function BrokerModal({ onClose }: { onClose: () => void }) {
                 href={b.url}
                 target="_blank"
                 rel="noopener noreferrer sponsored"
+                onClick={() => track("broker_select", { broker: b.id })}
                 className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 transition hover:border-blue-500 hover:bg-blue-50"
               >
                 <div>
@@ -160,6 +162,7 @@ function BrokerButton({
         href={AFFILIATE_URL}
         target="_blank"
         rel="noopener noreferrer sponsored"
+        onClick={() => track("broker_cta_click", { variant })}
         className={baseClasses}
       >
         {AFFILIATE_LABEL} →
@@ -168,7 +171,14 @@ function BrokerButton({
   }
 
   return (
-    <button type="button" onClick={onClick} className={baseClasses}>
+    <button
+      type="button"
+      onClick={() => {
+        track("broker_cta_open", { variant });
+        onClick();
+      }}
+      className={baseClasses}
+    >
       {AFFILIATE_LABEL} →
     </button>
   );
