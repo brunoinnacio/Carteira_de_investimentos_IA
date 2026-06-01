@@ -10,6 +10,12 @@ type Tool = {
 
 const tools: Tool[] = [
   {
+    emoji: "🔎",
+    title: "Onde investir agora",
+    desc: "Screener de FIIs com preço ao vivo. Filtre por Dividend Yield, P/VP, segmento e veja o que está atrativo hoje.",
+    href: "/oportunidades",
+  },
+  {
     emoji: "🧮",
     title: "Quanto investir para viver de FII",
     desc: "Diga quanto quer receber por mês. Mostramos o patrimônio necessário e quanto tempo leva pra chegar lá.",
@@ -54,7 +60,7 @@ export default function Home() {
         <div className="flex flex-col items-start gap-5">
           <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
             <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />
-            6 ferramentas no ar · 100% grátis
+            7 ferramentas no ar · 100% grátis
           </span>
           <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-5xl">
             Aprenda a viver de renda{" "}
@@ -85,6 +91,28 @@ export default function Home() {
             navegador
           </p>
         </div>
+
+        <Link
+          href="/aprender"
+          className="group mt-8 flex flex-col items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-5 transition hover:border-blue-300 hover:bg-blue-100 sm:flex-row sm:items-center sm:gap-5"
+        >
+          <span className="text-3xl" aria-hidden>
+            🌱
+          </span>
+          <div className="flex-1">
+            <h2 className="text-base font-semibold text-slate-900 sm:text-lg">
+              Nunca investiu e acha que é complicado ou golpe?
+            </h2>
+            <p className="mt-1 text-sm leading-relaxed text-slate-600">
+              Comece pela trilha &ldquo;do zero&rdquo;: explicações sem jargão,
+              com histórias que uma criança entende. Do medo à sua primeira
+              renda.
+            </p>
+          </div>
+          <span className="text-sm font-semibold text-blue-700 transition group-hover:text-blue-800">
+            Começar do zero →
+          </span>
+        </Link>
       </section>
 
       <section
@@ -94,7 +122,7 @@ export default function Home() {
         <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:py-16">
           <div className="mb-8 max-w-2xl">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-              As 6 ferramentas
+              As 7 ferramentas
             </h2>
             <p className="mt-2 text-slate-600">
               Clique em qualquer uma para abrir. Não precisa de cadastro.
@@ -144,8 +172,8 @@ export default function Home() {
             Quero ser avisado das próximas atualizações
           </h2>
           <p className="mb-6 mt-3 text-slate-600">
-            Já tem 6 ferramentas no ar. Em breve: gráficos de evolução
-            histórica e radar com base de FIIs pré-carregada.
+            Já tem 7 ferramentas no ar. Em breve: páginas individuais por FII e
+            alertas de preço e provento.
           </p>
           <WaitlistForm />
         </div>

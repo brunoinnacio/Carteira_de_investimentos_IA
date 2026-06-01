@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SiteSidebar } from "@/components/SiteSidebar";
 import { SiteFooter } from "@/components/SiteFooter";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,10 +15,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const TITLE = "FII Brasil · Calculadoras e Radar de Fundos Imobiliários";
+
 export const metadata: Metadata = {
-  title: "FII Brasil · Calculadoras e Radar de Fundos Imobiliários",
-  description:
-    "Aprenda a viver de renda passiva com Fundos Imobiliários (FIIs). Calculadoras, calendário de proventos e radar de oportunidades. Grátis.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: TITLE,
+    template: "%s · FII Brasil",
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
   keywords: [
     "FII",
     "fundos imobiliários",
@@ -25,14 +32,29 @@ export const metadata: Metadata = {
     "investimentos",
     "dividendos",
     "calculadora FII",
+    "dividend yield",
+    "proventos",
   ],
   authors: [{ name: "Bruno Inácio" }],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "FII Brasil · Calculadoras e Radar de Fundos Imobiliários",
-    description:
-      "Aprenda a viver de renda passiva com FIIs. Calculadoras, calendário de proventos e radar de oportunidades.",
+    title: TITLE,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
     locale: "pt_BR",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

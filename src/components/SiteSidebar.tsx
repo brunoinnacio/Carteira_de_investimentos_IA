@@ -9,7 +9,7 @@ type NavItem = {
   href: string;
   label: string;
   icon: React.ReactNode;
-  group: "Início" | "Calculadoras" | "Carteira" | "Aprender";
+  group: "Início" | "Calculadoras" | "Descobrir" | "Carteira" | "Aprender";
 };
 
 const items: NavItem[] = [
@@ -50,6 +50,17 @@ const items: NavItem[] = [
     ),
   },
   {
+    href: "/oportunidades",
+    label: "Onde investir",
+    group: "Descobrir",
+    icon: (
+      <>
+        <circle cx="11" cy="11" r="7" />
+        <path d="M21 21l-4.3-4.3M11 8v6M8 11h6" />
+      </>
+    ),
+  },
+  {
     href: "/calendario",
     label: "Calendário",
     group: "Carteira",
@@ -79,6 +90,18 @@ const items: NavItem[] = [
     icon: <path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14" />,
   },
   {
+    href: "/aprender",
+    label: "Comece do zero",
+    group: "Aprender",
+    icon: (
+      <>
+        <path d="M12 4v16" />
+        <path d="M12 6c-1.5-1.5-4-2-6-2v13c2 0 4.5.5 6 2" />
+        <path d="M12 6c1.5-1.5 4-2 6-2v13c-2 0-4.5.5-6 2" />
+      </>
+    ),
+  },
+  {
     href: "/glossario",
     label: "Glossário",
     group: "Aprender",
@@ -95,6 +118,7 @@ const items: NavItem[] = [
 const groups: Array<NavItem["group"]> = [
   "Início",
   "Calculadoras",
+  "Descobrir",
   "Carteira",
   "Aprender",
 ];
