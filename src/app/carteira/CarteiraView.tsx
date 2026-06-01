@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   TickerInput,
   isValidTicker,
@@ -26,6 +26,8 @@ import { brl, brlPrecise, percent } from "@/lib/format";
 
 type EditField = "precoMedio" | "quantidade" | "proventoMensalPorCota";
 type EditState = { ticker: string; field: EditField; raw: string } | null;
+
+const DEMO_KEY = "bolsacheia:demo";
 
 function formatBR(value: number, digits: number): string {
   return value.toLocaleString("pt-BR", {
@@ -528,6 +530,48 @@ export function CarteiraView() {
 
   const [edit, setEdit] = useState<EditState>(null);
 
+  // Modo demonstracao: marcado quando o usuario carrega a carteira de exemplo.
+  const [demo, setDemo] = useState(false);
+  useEffect(() => {
+    try {
+      setDemo(window.localStorage.getItem(DEMO_KEY) === "1");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const carregarExemplo = useCallback(() => {
+    try {
+      window.localStorage.setItem(DEMO_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+    setDemo(true);
+    substituir(CARTEIRA_EXEMPLO);
+  }, [substituir]);
+
+  const sairDaDemo = useCallback(() => {
+    try {
+      window.localStorage.removeItem(DEMO_KEY);
+    } catch {
+      /* ignore */
+    }
+    setDemo(false);
+    limpar();
+  }, [limpar]);
+
+  // Se a carteira ficou vazia (ex.: usuario removeu tudo), encerra a demo.
+  useEffect(() => {
+    if (hydrated && demo && posicoes.length === 0) {
+      try {
+        window.localStorage.removeItem(DEMO_KEY);
+      } catch {
+        /* ignore */
+      }
+      setDemo(false);
+    }
+  }, [hydrated, demo, posicoes.length]);
+
   const posicoesBolsa = useMemo(
     () => posicoes.filter((p) => classeDe(p) !== "rendaFixa"),
     [posicoes]
@@ -628,8 +672,27 @@ export function CarteiraView() {
 
   return (
     <div className="flex flex-col gap-5">
+      {demo && !vazio ? (
+        <div className="flex flex-col gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex items-center gap-2 text-sm text-amber-900">
+            <span className="inline-flex items-center rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
+              Demonstração
+            </span>
+            Você está vendo uma carteira de exemplo (R$ 100 mil). Os números não
+            são reais.
+          </p>
+          <button
+            type="button"
+            onClick={sairDaDemo}
+            className="inline-flex h-9 shrink-0 items-center justify-center rounded-lg border border-amber-400 bg-white px-4 text-sm font-semibold text-amber-800 transition hover:bg-amber-100"
+          >
+            Sair da demonstração
+          </button>
+        </div>
+      ) : null}
+
       {vazio ? (
-        <OnboardingVazio onExemplo={() => substituir(CARTEIRA_EXEMPLO)} />
+        <OnboardingVazio onExemplo={carregarExemplo} />
       ) : (
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
