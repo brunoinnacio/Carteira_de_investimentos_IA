@@ -311,6 +311,124 @@ export const GUIAS: Guia[] = [
     ],
     atualizadoEm: HOJE,
   },
+  {
+    slug: "como-receber-dividendos-todo-mes",
+    titulo: "Como receber dividendos todos os meses (guia da renda passiva)",
+    descricao:
+      "Entenda o que são dividendos e proventos e como montar uma carteira que pinga dinheiro na conta todo mês — sem promessas milagrosas.",
+    leituraMin: 6,
+    intro: [
+      "Receber um dinheiro na conta todo mês, sem precisar vender nada, é o sonho de quem busca renda passiva. E não é mágica: é o que acontece quando você é dono de coisas que pagam — como aluguéis e lucros de empresas.",
+      "Este guia explica, sem jargão, o que são dividendos e proventos e como organizar uma carteira para receber com regularidade.",
+    ],
+    secoes: [
+      {
+        titulo: "O que são dividendos e proventos",
+        paragrafos: [
+          "Quando você é dono de um pedacinho de uma empresa (ação) ou de imóveis (FII), você tem direito a uma parte dos lucros e aluguéis. Esse pagamento é o dividendo (nas ações) ou provento (nos FIIs).",
+          "É como ter uma galinha dos ovos de ouro: você não precisa vender a galinha para ganhar — basta ficar com ela e receber os ovos. No caso dos FIIs, esses ovos costumam cair todo mês e em geral sem imposto.",
+        ],
+      },
+      {
+        titulo: "Como montar uma renda que cai todo mês",
+        paragrafos: [
+          "Muitos Fundos Imobiliários pagam proventos mensalmente. Montando uma carteira com vários FIIs, você cria um fluxo de dinheiro entrando praticamente todo mês.",
+          "O segredo é a constância: comprar aos poucos, reinvestir o que recebe (a bola de neve) e diversificar entre tipos diferentes para a renda não depender de um único fundo.",
+        ],
+      },
+      {
+        titulo: "Quanto preciso para viver de renda",
+        paragrafos: [
+          "Depende de quanto você quer receber por mês e do rendimento médio dos seus investimentos. A conta é simples e a gente faz ela pra você: diga a renda desejada e veja o patrimônio necessário.",
+          "Spoiler honesto: não dá para viver de renda da noite para o dia. É um caminho de anos — mas totalmente possível com constância.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        pergunta: "FII paga dividendos todo mês?",
+        resposta:
+          "A maioria dos Fundos Imobiliários distribui proventos mensalmente, e geralmente sem imposto para a pessoa física. Já as ações costumam pagar dividendos em períodos variados.",
+      },
+      {
+        pergunta: "Preciso de muito dinheiro para receber dividendos?",
+        resposta:
+          "Não para começar. Você recebe proporcional ao que tem. Com pouco, os valores são pequenos; eles crescem conforme você aporta e reinveste ao longo do tempo.",
+      },
+    ],
+    ctas: [
+      {
+        texto: "Projete quanto de proventos sua carteira deve receber por mês.",
+        href: "/calendario",
+        label: "Ver o calendário de proventos",
+      },
+      {
+        texto: "Descubra quanto precisa investir para a renda mensal que quer.",
+        href: "/calculadora-renda",
+        label: "Calcular minha renda",
+      },
+    ],
+    relacionados: ["fii-ou-renda-fixa", "como-comecar-a-investir-do-zero"],
+    atualizadoEm: HOJE,
+  },
+  {
+    slug: "reserva-de-emergencia",
+    titulo: "Reserva de emergência: o que é, quanto ter e onde guardar",
+    descricao:
+      "Antes de investir para crescer, você precisa de um colchão para imprevistos. Veja quanto juntar e onde deixar essa reserva com segurança.",
+    leituraMin: 5,
+    intro: [
+      "A reserva de emergência é a base de tudo. É o dinheiro que te protege quando a vida surpreende: uma demissão, um conserto inesperado, uma emergência de saúde. Sem ela, qualquer susto vira dívida.",
+      "Montar a reserva vem antes de buscar rendimento alto. É o passo que dá tranquilidade para investir o resto sem medo.",
+    ],
+    secoes: [
+      {
+        titulo: "O que é (e por que vem primeiro)",
+        paragrafos: [
+          "É uma quantia guardada só para imprevistos, separada do dinheiro do dia a dia e dos investimentos de longo prazo. A função dela não é render muito — é estar disponível na hora do aperto.",
+          "Com a reserva pronta, você não precisa resgatar investimentos no pior momento (quando estão em baixa) nem recorrer a dívidas caras.",
+        ],
+      },
+      {
+        titulo: "Quanto ter",
+        paragrafos: [
+          "A regra geral é de 3 a 6 meses dos seus gastos mensais. Se sua renda é instável (autônomo, freelancer), mire mais perto de 6 a 12 meses.",
+          "Some quanto você gasta por mês com o essencial e multiplique. Esse é o seu alvo — dá para construir aos poucos.",
+        ],
+      },
+      {
+        titulo: "Onde guardar",
+        paragrafos: [
+          "A reserva precisa de duas coisas: segurança e resgate rápido (liquidez). Por isso ela fica na renda fixa mais conservadora e de fácil acesso — não em ações, FIIs ou cripto, que oscilam.",
+          "O objetivo aqui não é ganhar dinheiro, é não perder e ter o dinheiro à mão. O crescimento fica por conta dos outros investimentos, depois que a reserva estiver pronta.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        pergunta: "Posso deixar minha reserva de emergência em FIIs ou ações?",
+        resposta:
+          "Não é recomendado. Esses investimentos oscilam e você pode precisar sacar justamente quando estiverem em baixa. A reserva fica na renda fixa segura e de fácil resgate.",
+      },
+      {
+        pergunta: "Quanto devo ter de reserva?",
+        resposta:
+          "Em geral de 3 a 6 meses das suas despesas. Para renda instável, mire de 6 a 12 meses.",
+      },
+    ],
+    ctas: [
+      {
+        texto: "Veja onde guardar com segurança nos tipos de renda fixa.",
+        href: "/tipos-de-investimento",
+        label: "Ver renda fixa",
+      },
+    ],
+    relacionados: [
+      "como-comecar-a-investir-do-zero",
+      "como-investir-com-pouco-dinheiro",
+    ],
+    atualizadoEm: HOJE,
+  },
 ];
 
 export function getGuia(slug: string): Guia | undefined {
