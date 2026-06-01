@@ -2,10 +2,23 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { TickerInput, isValidTicker } from "@/components/TickerInput";
+import {
+  TickerInput,
+  isValidTicker,
+  isValidTickerAcao,
+} from "@/components/TickerInput";
 import { IntegerInput } from "@/components/IntegerInput";
 import { CurrencyInput } from "@/components/CurrencyInput";
-import { totaisCarteira, useCarteira, type Posicao } from "@/lib/carteira";
+import {
+  totaisCarteira,
+  totaisPorClasse,
+  rfKey,
+  useCarteira,
+  classeDe,
+  CLASSE_LABEL,
+  type Posicao,
+  type Classe,
+} from "@/lib/carteira";
 import { useCotacoes } from "@/lib/cotacoes";
 import { brl, brlPrecise, percent } from "@/lib/format";
 
@@ -141,42 +154,80 @@ function EditableCell({
   );
 }
 
+const CLASSES_FORM: { id: Classe; label: string }[] = [
+  { id: "fii", label: "FII" },
+  { id: "acao", label: "Ação" },
+  { id: "rendaFixa", label: "Renda fixa" },
+];
+
 function NovaPosicaoForm({ onAdd }: { onAdd: (p: Posicao) => void }) {
+  const [classe, setClasse] = useState<Classe>("fii");
   const [ticker, setTicker] = useState("");
   const [tickerTouched, setTickerTouched] = useState(false);
   const [quantidade, setQuantidade] = useState(0);
   const [precoMedio, setPrecoMedio] = useState(0);
   const [provento, setProvento] = useState(0);
+  const [nomeRF, setNomeRF] = useState("");
+  const [valorRF, setValorRF] = useState(0);
 
-  const tickerOk = isValidTicker(ticker);
+  const ehAcao = classe === "acao";
+  const ehRF = classe === "rendaFixa";
+
+  const tickerOk = ehAcao ? isValidTickerAcao(ticker) : isValidTicker(ticker);
   const tickerError =
     !tickerOk && ticker.length > 0 && tickerTouched
-      ? "Ticker inválido. Padrão esperado: XXXX11"
+      ? ehAcao
+        ? "Ticker inválido. Ex.: PETR4, ITUB3, BBAS3"
+        : "Ticker inválido. Padrão esperado: XXXX11"
       : undefined;
 
   const cotasOk = Number.isInteger(quantidade) && quantidade > 0;
   const precoOk = precoMedio > 0;
   const proventoOk = provento >= 0;
 
-  const isValid = tickerOk && cotasOk && precoOk && proventoOk;
+  const rfNomeOk = nomeRF.trim().length >= 2;
+  const rfValorOk = valorRF > 0;
+
+  const isValid = ehRF
+    ? rfNomeOk && rfValorOk
+    : tickerOk && cotasOk && precoOk && proventoOk;
+
+  function resetForm() {
+    setTicker("");
+    setTickerTouched(false);
+    setQuantidade(0);
+    setPrecoMedio(0);
+    setProvento(0);
+    setNomeRF("");
+    setValorRF(0);
+  }
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     setTickerTouched(true);
     if (!isValid) return;
 
-    onAdd({
-      ticker,
-      quantidade,
-      precoMedio,
-      proventoMensalPorCota: provento,
-    });
+    if (ehRF) {
+      const nome = nomeRF.trim();
+      onAdd({
+        ticker: rfKey(nome),
+        nome,
+        quantidade: 1,
+        precoMedio: valorRF,
+        proventoMensalPorCota: 0,
+        classe: "rendaFixa",
+      });
+    } else {
+      onAdd({
+        ticker,
+        quantidade,
+        precoMedio,
+        proventoMensalPorCota: provento,
+        classe,
+      });
+    }
 
-    setTicker("");
-    setTickerTouched(false);
-    setQuantidade(0);
-    setPrecoMedio(0);
-    setProvento(0);
+    resetForm();
   }
 
   return (
@@ -185,40 +236,86 @@ function NovaPosicaoForm({ onAdd }: { onAdd: (p: Posicao) => void }) {
       noValidate
       className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
     >
-      <div className="grid gap-3 sm:grid-cols-[130px_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1.2fr)]">
-        <TickerInput
-          label="Ticker"
-          value={ticker}
-          onChange={(v) => {
-            setTicker(v);
-            if (tickerTouched && v.length === 0) setTickerTouched(false);
-          }}
-          onBlur={() => setTickerTouched(true)}
-          error={tickerError}
-        />
-        <IntegerInput
-          label="Cotas"
-          value={quantidade}
-          onChange={setQuantidade}
-          placeholder="0"
-        />
-        <CurrencyInput
-          label="Preço médio"
-          value={precoMedio}
-          onChange={setPrecoMedio}
-        />
-        <CurrencyInput
-          label="Provento mensal / cota"
-          value={provento}
-          onChange={setProvento}
-          help="Pode ser 0 se o fundo não está pagando este mês."
-        />
+      <div className="mb-3 inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+        {CLASSES_FORM.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            onClick={() => setClasse(c.id)}
+            className={`rounded-md px-4 py-1.5 text-sm font-medium transition ${
+              classe === c.id
+                ? "bg-blue-600 text-white shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            {c.label}
+          </button>
+        ))}
       </div>
 
+      {ehRF ? (
+        <div className="grid gap-3 sm:grid-cols-[minmax(0,_2fr)_minmax(0,_1fr)]">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-slate-700">
+              Nome / descrição
+            </span>
+            <input
+              type="text"
+              value={nomeRF}
+              onChange={(e) => setNomeRF(e.target.value)}
+              placeholder="Ex.: Tesouro Selic 2029, CDB Banco X"
+              className="h-[42px] rounded-lg border border-slate-300 bg-white px-3 text-base text-slate-900 placeholder-slate-400 shadow-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+            />
+          </label>
+          <CurrencyInput
+            label="Valor aplicado"
+            value={valorRF}
+            onChange={setValorRF}
+            help="Quanto você tem investido nesse título."
+          />
+        </div>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-[130px_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1.2fr)]">
+          <TickerInput
+            label="Ticker"
+            value={ticker}
+            onChange={(v) => {
+              setTicker(v);
+              if (tickerTouched && v.length === 0) setTickerTouched(false);
+            }}
+            onBlur={() => setTickerTouched(true)}
+            error={tickerError}
+          />
+          <IntegerInput
+            label={ehAcao ? "Quantidade" : "Cotas"}
+            value={quantidade}
+            onChange={setQuantidade}
+            placeholder="0"
+          />
+          <CurrencyInput
+            label="Preço médio"
+            value={precoMedio}
+            onChange={setPrecoMedio}
+          />
+          <CurrencyInput
+            label={ehAcao ? "Dividendo mensal / ação" : "Provento mensal / cota"}
+            value={provento}
+            onChange={setProvento}
+            help={
+              ehAcao
+                ? "Opcional. Ações pagam dividendos irregulares — pode deixar 0."
+                : "Pode ser 0 se o fundo não está pagando este mês."
+            }
+          />
+        </div>
+      )}
+
       <div className="mt-4 flex items-center justify-end gap-3">
-        {!isValid && (ticker || quantidade || precoMedio) ? (
+        {!isValid && (ticker || quantidade || precoMedio || nomeRF || valorRF) ? (
           <p className="text-xs text-slate-500" aria-live="polite">
-            Preencha ticker válido, cotas e preço médio para adicionar.
+            {ehRF
+              ? "Preencha o nome e o valor aplicado para adicionar."
+              : "Preencha ticker válido, cotas e preço médio para adicionar."}
           </p>
         ) : null}
         <button
@@ -245,6 +342,136 @@ function formatTime(iso: string | null): string {
   }
 }
 
+const CLASSE_COR: Record<Classe, { bar: string; dot: string; label: string }> = {
+  fii: { bar: "bg-blue-500", dot: "bg-blue-500", label: "FIIs" },
+  acao: { bar: "bg-violet-500", dot: "bg-violet-500", label: "Ações" },
+  rendaFixa: { bar: "bg-teal-500", dot: "bg-teal-500", label: "Renda fixa" },
+};
+
+function AlocacaoConsolidada({
+  porClasse,
+  total,
+}: {
+  porClasse: Record<Classe, number>;
+  total: number;
+}) {
+  if (total <= 0) return null;
+  const ordem: Classe[] = ["fii", "acao", "rendaFixa"];
+  const itens = ordem
+    .map((c) => ({ classe: c, valor: porClasse[c], pct: (porClasse[c] / total) * 100 }))
+    .filter((i) => i.valor > 0);
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex items-baseline justify-between">
+        <h2 className="text-base font-semibold text-slate-900">
+          Alocação por classe
+        </h2>
+        <span className="text-xs text-slate-500">total {brl(total)}</span>
+      </div>
+      <div className="mt-3 flex h-3 w-full overflow-hidden rounded-full bg-slate-100">
+        {itens.map((i) => (
+          <div
+            key={i.classe}
+            className={CLASSE_COR[i.classe].bar}
+            style={{ width: `${i.pct}%` }}
+            title={`${CLASSE_COR[i.classe].label}: ${i.pct.toFixed(1)}%`}
+          />
+        ))}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+        {itens.map((i) => (
+          <div key={i.classe} className="flex items-center gap-2 text-sm">
+            <span
+              className={`h-2.5 w-2.5 rounded-full ${CLASSE_COR[i.classe].dot}`}
+            />
+            <span className="font-medium text-slate-700">
+              {CLASSE_COR[i.classe].label}
+            </span>
+            <span className="tabular-nums text-slate-500">
+              {i.pct.toFixed(1)}% · {brl(i.valor)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RendaFixaTabela({
+  posicoes,
+  total,
+  onRemover,
+}: {
+  posicoes: Posicao[];
+  total: number;
+  onRemover: (ticker: string) => void;
+}) {
+  const totalRF = posicoes.reduce((a, p) => a + p.precoMedio * p.quantidade, 0);
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="border-b border-slate-100 px-5 py-3">
+        <h2 className="text-base font-semibold text-slate-900">
+          Renda fixa · {posicoes.length} título(s)
+        </h2>
+        <p className="text-xs text-slate-500">
+          Tesouro, CDB, LCI/LCA e afins. Sem cotação de mercado — o valor é o que
+          você aplicou.
+        </p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-slate-200 text-sm">
+          <thead className="bg-slate-50 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+            <tr>
+              <th className="px-4 py-3">Título</th>
+              <th className="px-4 py-3 text-right">Valor aplicado</th>
+              <th className="px-4 py-3 text-right">% da carteira</th>
+              <th className="px-4 py-3" />
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-200">
+            {posicoes.map((p) => {
+              const valor = p.precoMedio * p.quantidade;
+              const pct = total > 0 ? (valor / total) * 100 : 0;
+              return (
+                <tr key={p.ticker} className="text-slate-700">
+                  <td className="px-4 py-3 font-medium text-slate-900">
+                    {p.nome ?? p.ticker.replace(/^RF:/, "")}
+                  </td>
+                  <td className="px-4 py-3 text-right tabular-nums">
+                    {brlPrecise(valor)}
+                  </td>
+                  <td className="px-4 py-3 text-right tabular-nums text-slate-500">
+                    {pct.toFixed(1)}%
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      type="button"
+                      onClick={() => onRemover(p.ticker)}
+                      className="text-xs font-medium text-rose-700 hover:text-rose-800"
+                    >
+                      remover
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot className="bg-slate-50 text-sm font-semibold text-slate-900">
+            <tr>
+              <td className="px-4 py-3">Total renda fixa</td>
+              <td className="px-4 py-3 text-right tabular-nums">
+                {brlPrecise(totalRF)}
+              </td>
+              <td className="px-4 py-3" colSpan={2} />
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 export function CarteiraView() {
   const { posicoes, hydrated, adicionar, remover, limpar, salvar } =
     useCarteira();
@@ -254,7 +481,20 @@ export function CarteiraView() {
 
   const [edit, setEdit] = useState<EditState>(null);
 
-  const tickers = useMemo(() => posicoes.map((p) => p.ticker), [posicoes]);
+  const posicoesBolsa = useMemo(
+    () => posicoes.filter((p) => classeDe(p) !== "rendaFixa"),
+    [posicoes]
+  );
+  const posicoesRF = useMemo(
+    () => posicoes.filter((p) => classeDe(p) === "rendaFixa"),
+    [posicoes]
+  );
+
+  // Cotacoes so fazem sentido para ativos de bolsa (FII/acao).
+  const tickers = useMemo(
+    () => posicoesBolsa.map((p) => p.ticker),
+    [posicoesBolsa]
+  );
   const { cotacoes, carregando, erro, atualizadoEm, recarregar } =
     useCotacoes(tickers);
 
@@ -274,6 +514,27 @@ export function CarteiraView() {
       }, 0),
     [posicoes, cotacoes]
   );
+
+  const investidoBolsa = useMemo(
+    () => posicoesBolsa.reduce((a, p) => a + p.precoMedio * p.quantidade, 0),
+    [posicoesBolsa]
+  );
+  const valorMercadoBolsa = useMemo(
+    () =>
+      posicoesBolsa.reduce((acc, p) => {
+        const cot = cotacoes[p.ticker]?.preco;
+        if (typeof cot === "number") return acc + cot * p.quantidade;
+        return acc + p.precoMedio * p.quantidade;
+      }, 0),
+    [posicoesBolsa, cotacoes]
+  );
+  const lucroBolsa = valorMercadoBolsa - investidoBolsa;
+  const lucroBolsaPercent =
+    investidoBolsa > 0 ? (lucroBolsa / investidoBolsa) * 100 : 0;
+  const yieldBolsa =
+    investidoBolsa > 0 ? ((rendaMensal * 12) / investidoBolsa) * 100 : 0;
+
+  const alocacao = useMemo(() => totaisPorClasse(posicoes), [posicoes]);
 
   const lucro = valorMercado - investido;
   const lucroPercent = investido > 0 ? (lucro / investido) * 100 : 0;
@@ -337,6 +598,13 @@ export function CarteiraView() {
         </div>
       </div>
 
+      {posicoes.length > 0 ? (
+        <AlocacaoConsolidada
+          porClasse={alocacao.porClasse}
+          total={alocacao.total}
+        />
+      ) : null}
+
       <NovaPosicaoForm onAdd={adicionar} />
 
       {posicoes.length === 0 ? (
@@ -356,11 +624,13 @@ export function CarteiraView() {
           </p>
         </div>
       ) : (
+        <>
+        {posicoesBolsa.length > 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3">
             <div>
               <h2 className="text-base font-semibold text-slate-900">
-                Posições · {posicoes.length} FII(s)
+                FIIs e ações · {posicoesBolsa.length} ativo(s)
               </h2>
               <p className="text-xs text-slate-500">
                 {carregando
@@ -412,7 +682,7 @@ export function CarteiraView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
-                {posicoes.map((p) => {
+                {posicoesBolsa.map((p) => {
                   const invest = p.precoMedio * p.quantidade;
                   const renda = p.proventoMensalPorCota * p.quantidade;
                   const yoc =
@@ -443,6 +713,17 @@ export function CarteiraView() {
                       <td className="px-4 py-3 font-semibold text-slate-900">
                         <span className="flex items-center gap-2">
                           {p.ticker}
+                          <span
+                            className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ring-1 ${
+                              classeDe(p) === "acao"
+                                ? "bg-violet-100 text-violet-800 ring-violet-200"
+                                : classeDe(p) === "rendaFixa"
+                                ? "bg-teal-100 text-teal-800 ring-teal-200"
+                                : "bg-blue-100 text-blue-800 ring-blue-200"
+                            }`}
+                          >
+                            {CLASSE_LABEL[classeDe(p)]}
+                          </span>
                           {pmEstimado ? (
                             <span
                               title="Preço médio precisa ser preenchido. Edite ou remova."
@@ -565,20 +846,20 @@ export function CarteiraView() {
                     Totais
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
-                    {brlPrecise(investido)}
+                    {brlPrecise(investidoBolsa)}
                   </td>
                   <td className="px-4 py-3" />
                   <td className="px-4 py-3 text-right tabular-nums">
-                    {brlPrecise(valorMercado)}
+                    {brlPrecise(valorMercadoBolsa)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
                     <span
                       className={
-                        lucro >= 0 ? "text-emerald-700" : "text-rose-700"
+                        lucroBolsa >= 0 ? "text-emerald-700" : "text-rose-700"
                       }
                     >
-                      {lucro >= 0 ? "+" : ""}
-                      {percent(lucroPercent)}
+                      {lucroBolsa >= 0 ? "+" : ""}
+                      {percent(lucroBolsaPercent)}
                     </span>
                   </td>
                   <td className="px-4 py-3" />
@@ -586,7 +867,7 @@ export function CarteiraView() {
                     {brlPrecise(rendaMensal)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
-                    {percent(yieldCarteira)}
+                    {percent(yieldBolsa)}
                   </td>
                   <td className="px-4 py-3" />
                 </tr>
@@ -594,13 +875,23 @@ export function CarteiraView() {
             </table>
           </div>
         </div>
+        ) : null}
+
+        {posicoesRF.length > 0 ? (
+          <RendaFixaTabela
+            posicoes={posicoesRF}
+            total={alocacao.total}
+            onRemover={remover}
+          />
+        ) : null}
+        </>
       )}
 
       {posicoes.length > 0 ? (
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
           <p className="text-slate-500">
-            Carteira salva no seu navegador. Limpe o cache do site = perde os
-            dados.
+            Alterações salvas automaticamente. Sem conta, ficam só neste
+            navegador; com conta, sincronizam na nuvem.
           </p>
           <button
             type="button"

@@ -96,8 +96,8 @@ export function Calendario() {
 
       {semProventos ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-          Você cadastrou FIIs, mas não informou o provento mensal por cota
-          deles ainda. Volte na{" "}
+          Você tem ativos cadastrados, mas não informou o provento/dividendo
+          mensal deles ainda. Volte na{" "}
           <Link
             href="/carteira"
             className="font-semibold text-amber-900 underline hover:text-amber-950"
@@ -141,7 +141,7 @@ export function Calendario() {
 
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="mb-4 text-base font-semibold text-slate-900">
-          Detalhamento por FII
+          Detalhamento por ativo
         </h2>
         <div className="overflow-x-auto rounded-xl border border-slate-200">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
@@ -155,7 +155,9 @@ export function Calendario() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
-              {posicoes.map((p) => {
+              {posicoes
+                .filter((p) => p.proventoMensalPorCota > 0)
+                .map((p) => {
                 const mes = p.proventoMensalPorCota * p.quantidade;
                 return (
                   <tr key={p.ticker} className="text-slate-700">

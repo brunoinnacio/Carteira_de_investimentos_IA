@@ -3,11 +3,19 @@
 import Link from "next/link";
 import { useState } from "react";
 import * as XLSX from "xlsx";
-import { useCarteira, type Posicao } from "@/lib/carteira";
+import {
+  useCarteira,
+  classeDe,
+  inferirClasse,
+  CLASSE_LABEL,
+  type Posicao,
+  type Classe,
+} from "@/lib/carteira";
 import { brlPrecise } from "@/lib/format";
 
-const TICKER_REGEX = /\b([A-Z]{4}1[12])\b/;
 const TICKER_REGEX_GLOBAL = /\b([A-Z]{4}1[12])\b/g;
+// Ações/units/BDRs: 4 letras + 1 ou 2 dígitos (PETR4, ITUB3, TAEE11, AAPL34).
+const TICKER_ANY_REGEX = /\b([A-Z]{4}\d{1,2})\b/;
 
 async function readXlsxAsRows(file: File): Promise<unknown[][]> {
   const buffer = await file.arrayBuffer();
@@ -109,6 +117,7 @@ type Movimento = {
   quantidade: number;
   preco: number;
   valor: number;
+  classe: Classe;
 };
 
 type TickerIgnorado = {
@@ -274,7 +283,7 @@ function parseRows(rows: unknown[][]): ParseResult {
   let ignoradas = 0;
   let modo: "header" | "heuristico" = "header";
   const avisos: string[] = [];
-  const naoFiiMap = new Map<string, string>();
+  const classeMap = new Map<string, Classe>();
   const proventoInfoMap = new Map<
     string,
     { qtd: number; valorPorCota: number }
@@ -323,21 +332,11 @@ function parseRows(rows: unknown[][]): ParseResult {
           continue;
         }
         const produto = String(row[colProduto] ?? "");
-        const match = produto.match(TICKER_REGEX);
+        const match = produto.match(TICKER_ANY_REGEX);
         if (!match) continue;
         const ticker = match[1];
-
-        if (!isProductFII(produto)) {
-          if (!naoFiiMap.has(ticker)) {
-            const descricao = produto
-              .replace(new RegExp(`^${ticker}\\s*-?\\s*`), "")
-              .trim()
-              .slice(0, 60);
-            naoFiiMap.set(ticker, descricao);
-          }
-          ignoradas++;
-          continue;
-        }
+        const classe: Classe = isProductFII(produto) ? "fii" : "acao";
+        classeMap.set(ticker, classe);
 
         const entradaSaida =
           colEntradaSaida >= 0 ? String(row[colEntradaSaida] ?? "") : "";
@@ -359,7 +358,9 @@ function parseRows(rows: unknown[][]): ParseResult {
             ml.includes("pagamento de rendiment") ||
             ml.includes("juros") ||
             ml.includes("amortiz");
-          if (ehProvento) {
+          // Só estimamos provento mensal para FIIs (pagam todo mês).
+          // Ações pagam dividendos irregulares — deixamos para o usuário.
+          if (ehProvento && classe === "fii") {
             const qtdProvento = parseNumber(row[colQtd]);
             const precoCota = colPreco >= 0 ? parseNumber(row[colPreco]) : 0;
             if (qtdProvento > 0) {
@@ -397,6 +398,7 @@ function parseRows(rows: unknown[][]): ParseResult {
           quantidade,
           preco: precoFinal,
           valor: valor || precoFinal * quantidade,
+          classe,
         });
       }
     } else {
@@ -418,7 +420,7 @@ function parseRows(rows: unknown[][]): ParseResult {
 
   if (movimentos.length === 0) {
     avisos.push(
-      "Nenhum movimento de compra/venda de FII (XXXX11) foi reconhecido. Apenas proventos/eventos não afetam a carteira."
+      "Nenhum movimento de compra/venda (FII ou ação) foi reconhecido. Apenas proventos/eventos não afetam a carteira."
     );
   }
 
@@ -447,6 +449,7 @@ function parseRows(rows: unknown[][]): ParseResult {
       quantidade: Math.round(v.qtd),
       precoMedio: v.custo / v.qtd,
       proventoMensalPorCota: 0,
+      classe: classeMap.get(ticker) ?? inferirClasse(ticker),
     }));
 
   const estimados: string[] = [];
@@ -463,23 +466,19 @@ function parseRows(rows: unknown[][]): ParseResult {
       quantidade: Math.round(info.qtd),
       precoMedio: 0,
       proventoMensalPorCota: info.valorPorCota,
+      classe: "fii",
     });
     estimados.push(ticker);
   }
   posicoes.sort((a, b) => a.ticker.localeCompare(b.ticker));
 
   const tickersIgnorados: TickerIgnorado[] = [];
-  for (const [ticker, descricao] of naoFiiMap.entries()) {
-    tickersIgnorados.push({ ticker, motivo: "nao-fii", descricao });
-  }
-  tickersIgnorados.sort((a, b) => a.ticker.localeCompare(b.ticker));
 
-  if (naoFiiMap.size > 0) {
-    const lista = Array.from(naoFiiMap.keys()).slice(0, 5).join(", ");
+  const nFii = posicoes.filter((p) => p.classe === "fii").length;
+  const nAcao = posicoes.filter((p) => p.classe === "acao").length;
+  if (nAcao > 0) {
     avisos.push(
-      `Ignorei ${naoFiiMap.size} ticker(s) que não são FIIs (ações, units ou BDRs): ${lista}${
-        naoFiiMap.size > 5 ? "…" : ""
-      }.`
+      `Reconheci ${nFii} FII(s) e ${nAcao} ação(ões) no extrato. As ações entram sem dividendo estimado — informe se quiser na carteira.`
     );
   }
   if (estimados.length > 0) {
@@ -542,6 +541,7 @@ function heuristicScan(rows: unknown[][]): Movimento[] {
       quantidade,
       preco,
       valor: quantidade * preco,
+      classe: "fii",
     });
   }
   return out;
@@ -905,6 +905,15 @@ export function Importacao() {
                           <td className="px-4 py-3 font-semibold text-slate-900">
                             <span className="flex items-center gap-2">
                               {p.ticker}
+                              <span
+                                className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ring-1 ${
+                                  classeDe(p) === "acao"
+                                    ? "bg-violet-100 text-violet-800 ring-violet-200"
+                                    : "bg-blue-100 text-blue-800 ring-blue-200"
+                                }`}
+                              >
+                                {CLASSE_LABEL[classeDe(p)]}
+                              </span>
                               {estimado ? (
                                 <span
                                   title="Quantidade deduzida do extrato de proventos. Preço médio precisa ser preenchido manualmente."
@@ -1048,14 +1057,14 @@ export function Importacao() {
         <p className="font-semibold text-slate-900">Depois de importar:</p>
         <ul className="mt-2 list-inside list-disc space-y-1 text-slate-600">
           <li>
-            Edite cada FII na{" "}
+            Edite cada ativo na{" "}
             <Link
               href="/carteira"
               className="font-semibold text-blue-700 hover:text-blue-800"
             >
               página da carteira
             </Link>{" "}
-            para informar o provento mensal por cota.
+            para informar o provento/dividendo mensal (FIIs pagam todo mês).
           </li>
           <li>
             Veja a projeção no{" "}

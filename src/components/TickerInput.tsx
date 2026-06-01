@@ -6,6 +6,11 @@ export function isValidTicker(value: string): boolean {
   return TICKER_REGEX.test(value);
 }
 
+// Acoes/units/BDRs: 4 letras + 1 ou 2 digitos (PETR4, TAEE11, AAPL34).
+export function isValidTickerAcao(value: string): boolean {
+  return /^[A-Z]{4}\d{1,2}$/.test(value);
+}
+
 export function TickerInput({
   label,
   value,

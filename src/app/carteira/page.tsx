@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { CarteiraView } from "./CarteiraView";
+import { CarteiraSyncBanner } from "@/components/CarteiraSyncBanner";
 
 export const metadata: Metadata = {
   title: "Minha Carteira de FIIs · FII Brasil",
   description:
-    "Cadastre seus FIIs, quantidade e provento médio mensal. Sua carteira fica salva no próprio navegador e alimenta o calendário e o radar.",
+    "Cadastre seus FIIs, quantidade e provento médio mensal. Use sem cadastro (salvo no navegador) ou crie uma conta grátis para sincronizar e acessar de qualquer lugar.",
 };
 
 export default function Page() {
@@ -16,10 +17,13 @@ export default function Page() {
             Minha carteira de FIIs
           </h1>
           <p className="mt-2 text-slate-600">
-            Adicione os FIIs que você tem (ou que quer simular). A carteira
-            fica salva no próprio navegador — nada vai pra servidor nenhum.
+            Adicione os FIIs que você tem (ou que quer simular). Sem conta, fica
+            salva neste navegador; com conta grátis, sincroniza na nuvem e você
+            acessa de qualquer lugar.
           </p>
         </div>
+
+        <CarteiraSyncBanner />
 
         <CarteiraView />
       </section>
