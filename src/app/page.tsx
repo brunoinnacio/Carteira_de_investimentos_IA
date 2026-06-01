@@ -63,14 +63,14 @@ export default function Home() {
             7 ferramentas no ar · 100% grátis
           </span>
           <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-5xl">
-            Aprenda a viver de renda{" "}
-            <span className="text-blue-700">com Fundos Imobiliários</span>.
-            Sem virar trader.
+            Aprenda a investir do zero{" "}
+            <span className="text-blue-700">e a viver de renda</span>. Sem
+            economês, sem golpe.
           </h1>
           <p className="max-w-2xl text-base text-slate-600 sm:text-lg">
-            Calculadoras, simuladores, radar, calendário e importação da B3 —
-            tudo pensado para quem está começando e quer construir uma renda
-            mensal com FIIs.
+            Renda fixa, ações, FIIs e mais — explicados com histórias simples
+            que qualquer um entende. Mais calculadoras, radar, calendário e
+            importação da B3 para colocar em prática.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Link
@@ -92,27 +92,37 @@ export default function Home() {
           </p>
         </div>
 
-        <Link
-          href="/aprender"
-          className="group mt-8 flex flex-col items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-5 transition hover:border-blue-300 hover:bg-blue-100 sm:flex-row sm:items-center sm:gap-5"
-        >
-          <span className="text-3xl" aria-hidden>
-            🌱
-          </span>
-          <div className="flex-1">
-            <h2 className="text-base font-semibold text-slate-900 sm:text-lg">
-              Nunca investiu e acha que é complicado ou golpe?
-            </h2>
-            <p className="mt-1 text-sm leading-relaxed text-slate-600">
-              Comece pela trilha &ldquo;do zero&rdquo;: explicações sem jargão,
-              com histórias que uma criança entende. Do medo à sua primeira
-              renda.
-            </p>
+        <div className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+          <div className="flex items-start gap-3">
+            <span className="text-3xl" aria-hidden>
+              🌱
+            </span>
+            <div>
+              <h2 className="text-base font-semibold text-slate-900 sm:text-lg">
+                Nunca investiu e acha que é complicado ou golpe?
+              </h2>
+              <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                A gente te ensina do zero, com histórias que uma criança
+                entende — e mostra todos os tipos de investimento, do mais
+                seguro ao mais ousado.
+              </p>
+            </div>
           </div>
-          <span className="text-sm font-semibold text-blue-700 transition group-hover:text-blue-800">
-            Começar do zero →
-          </span>
-        </Link>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <Link
+              href="/aprender"
+              className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+            >
+              Começar do zero →
+            </Link>
+            <Link
+              href="/tipos-de-investimento"
+              className="inline-flex h-10 items-center justify-center rounded-lg border border-blue-600 bg-white px-5 text-sm font-semibold text-blue-700 transition hover:bg-blue-600 hover:text-white"
+            >
+              Ver tipos de investimento
+            </Link>
+          </div>
+        </div>
       </section>
 
       <section

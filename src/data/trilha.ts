@@ -223,8 +223,147 @@ export const MODULOS: Modulo[] = [
     },
   },
   {
-    slug: "o-que-e-fii",
+    slug: "cardapio-de-investimentos",
     numero: 5,
+    nivel: "Primeiros passos",
+    emoji: "🍽️",
+    titulo: "O cardápio de investimentos (sem economês)",
+    resumo:
+      "Existem vários jeitos de fazer o dinheiro trabalhar. Conheça os principais como num cardápio — e veja qual combina com você.",
+    analogia: {
+      titulo: "O cardápio do restaurante",
+      texto:
+        "Você não come tudo o que tem no cardápio: escolhe pelo seu gosto e pela sua fome. Investir é igual. Tem 'pratos leves' (mais seguros e previsíveis) e 'pratos ousados' (que podem render mais, mas viram o estômago). O segredo não é achar o prato 'certo' — é montar um prato que combine com a sua fome (seu objetivo) e com o seu sono tranquilo.",
+    },
+    paraCrianca:
+      "É como uma sorveteria: tem sabores simples e sabores radicais. Você não precisa de todos — escolhe os que gosta e pode até misturar.",
+    naPratica:
+      "Os investimentos se dividem em dois grandes grupos: 'emprestar e receber de volta com um a mais' (renda fixa) e 'virar dono de algo' (renda variável, como ações e FIIs). Entender essa divisão já resolve 90% da confusão.",
+    secoes: [
+      {
+        titulo: "Os dois grandes grupos",
+        paragrafos: [
+          "No primeiro grupo, você empresta seu dinheiro (para o governo ou para um banco) e ele volta depois com um valor combinado por cima. É mais previsível e costuma ser mais seguro. É a renda fixa.",
+          "No segundo grupo, você compra um pedacinho de algo — uma empresa, um imóvel — e passa a ser dono. Pode render mais com o tempo, mas o valor sobe e desce no caminho. É a renda variável.",
+        ],
+      },
+      {
+        titulo: "Como escolher sem se perder",
+        paragrafos: [
+          "Comece pela pergunta: quando vou precisar desse dinheiro? Para objetivos de curto prazo e para a reserva de emergência, prefira o previsível (renda fixa). Para sonhos de longo prazo, dá pra temperar com renda variável.",
+          "E respeite o seu sono: se ver o valor oscilar vai te tirar a paz, comece devagar. Dá pra ir misturando os 'sabores' conforme você ganha confiança.",
+        ],
+      },
+    ],
+    pontosChave: [
+      "Tudo se resume a dois grupos: emprestar (renda fixa) ou ser dono (renda variável).",
+      "Escolha pelo prazo do seu objetivo e pelo seu sono tranquilo.",
+      "Você não precisa de todos os tipos — pode misturar aos poucos.",
+    ],
+    experimente: {
+      texto:
+        "Veja o cardápio completo: renda fixa, ações, FIIs, fundos e mais, cada um explicado em uma frase.",
+      href: "/tipos-de-investimento",
+      label: "Ver todos os tipos",
+    },
+  },
+  {
+    slug: "renda-fixa",
+    numero: 6,
+    nivel: "Primeiros passos",
+    emoji: "🏦",
+    titulo: "Renda fixa: emprestar e receber com um quentinho por cima",
+    resumo:
+      "O grupo mais previsível e o melhor lugar pra começar. Entenda por que você vira 'o banco'.",
+    analogia: {
+      titulo: "Agora você é o banco",
+      texto:
+        "Sabe quando o banco empresta dinheiro e cobra juros? Na renda fixa, os papéis se invertem: VOCÊ empresta o seu dinheiro (para o governo ou para um banco) e recebe de volta com juros por cima. É o investimento mais previsível que existe — você já sabe, mais ou menos, quanto vai receber e quando.",
+    },
+    paraCrianca:
+      "É como emprestar seu lanche pro amigo com uma combinação: amanhã ele te devolve o lanche e ainda dá uma bala de brinde.",
+    naPratica:
+      "Renda fixa é quando você empresta (Tesouro Direto, CDB, LCI/LCA) e recebe de volta com juros. Mais previsível, geralmente mais seguro, e perfeito pra reserva de emergência e objetivos com data marcada.",
+    secoes: [
+      {
+        titulo: "Por que é o melhor lugar pra começar",
+        paragrafos: [
+          "É previsível: você consegue estimar quanto vai receber. É acessível: dá pra começar com poucos reais no Tesouro Direto. E parte dela tem proteção oficial até um certo valor, caso o banco quebre.",
+          "Por isso a reserva de emergência (aquele dinheiro pra imprevistos) quase sempre fica na renda fixa: precisa estar seguro e fácil de sacar, não rendendo o máximo possível.",
+        ],
+      },
+      {
+        titulo: "Não é mágica: menos risco, menos retorno",
+        paragrafos: [
+          "Como é mais segura, a renda fixa costuma render menos que a renda variável no longo prazo. Isso é justo: você troca um pouco de ganho por muita tranquilidade.",
+          "Mesmo aqui vale o alerta de sempre: se alguém oferece uma 'renda fixa' com retorno altíssimo e garantido, desconfie. Segurança e ganho altíssimo não andam juntos.",
+        ],
+      },
+    ],
+    alertaGolpe:
+      "'Renda fixa' que promete o dobro do normal, garantido, é isca de golpe. O seguro rende de forma modesta — é assim que tem que ser.",
+    pontosChave: [
+      "Na renda fixa, você empresta e recebe de volta com juros — é o mais previsível.",
+      "É o lar natural da reserva de emergência: seguro e fácil de sacar.",
+      "Menos risco significa menos retorno — e está tudo bem.",
+    ],
+    experimente: {
+      texto:
+        "Veja os tipos de renda fixa (Tesouro, CDB, LCI/LCA) explicados em uma frase cada.",
+      href: "/tipos-de-investimento",
+      label: "Conhecer a renda fixa",
+    },
+  },
+  {
+    slug: "acoes",
+    numero: 7,
+    nivel: "Mão na massa",
+    emoji: "📈",
+    titulo: "Ações: virar sócio de uma empresa grande",
+    resumo:
+      "Comprar um pedacinho de uma empresa. Como você ganha e por que precisa de estômago e tempo.",
+    analogia: {
+      titulo: "Sócio da padaria do bairro",
+      texto:
+        "Imagine virar dono de um pedacinho da padaria mais movimentada do bairro. Se ela vende mais pão e lucra mais, o seu pedacinho fica mais valioso — e no fim do ano você ainda recebe uma parte do lucro. Comprar uma ação é exatamente isso, só que de empresas gigantes, com um valor que cabe no seu bolso.",
+    },
+    paraCrianca:
+      "É ter um pedacinho da loja de brinquedos: se a loja vende muito, o seu pedacinho vale mais e você ganha um pouco do lucro.",
+    naPratica:
+      "Ações são fatias de empresas na bolsa. Você ganha de dois jeitos: a ação pode valorizar e a empresa pode te pagar parte do lucro (os dividendos). Em troca, o preço balança bastante no curto prazo.",
+    secoes: [
+      {
+        titulo: "Como você ganha de verdade",
+        paragrafos: [
+          "Primeiro, pela valorização: se a empresa cresce e dá lucro, mais gente quer ser sócia, e o preço da ação tende a subir com o tempo. Segundo, pelos dividendos: muitas empresas distribuem parte do lucro para os donos das ações.",
+          "No longo prazo, o conjunto das boas empresas tende a acompanhar (e muitas vezes superar) o crescimento da economia. Mas isso acontece em anos, não em dias.",
+        ],
+      },
+      {
+        titulo: "O preço de balançar",
+        paragrafos: [
+          "Ações sobem e descem todo dia — às vezes muito. Quem vende no susto, na primeira queda, costuma se machucar. Quem entende que faz parte e pensa no longo prazo tende a se sair melhor.",
+          "Por isso duas regras: invista só o dinheiro que não vai precisar tão cedo, e nunca aposte tudo numa empresa só. Diversificar é o cinto de segurança.",
+        ],
+      },
+    ],
+    alertaGolpe:
+      "Fuja de 'robôs' e grupos que prometem acertar qual ação sobe amanhã. Ninguém acerta sempre — quem diz que acerta está te vendendo uma ilusão.",
+    pontosChave: [
+      "Comprar uma ação é virar sócio de uma empresa.",
+      "Você ganha com a valorização e com os dividendos — ao longo de anos.",
+      "O preço balança muito: invista no longo prazo e diversifique sempre.",
+    ],
+    experimente: {
+      texto:
+        "Entenda por que espalhar o dinheiro protege você — vale para ações e para tudo o mais.",
+      href: "/aprender/nao-bote-os-ovos",
+      label: "Aprender a diversificar",
+    },
+  },
+  {
+    slug: "o-que-e-fii",
+    numero: 8,
     nivel: "Primeiros passos",
     emoji: "🏬",
     titulo: "O que é um FII (explicado como pra uma criança)",
@@ -269,7 +408,7 @@ export const MODULOS: Modulo[] = [
   },
   {
     slug: "nao-bote-os-ovos",
-    numero: 6,
+    numero: 9,
     nivel: "Mão na massa",
     emoji: "🧺",
     titulo: "Não bote todos os ovos na mesma cesta",
@@ -314,7 +453,7 @@ export const MODULOS: Modulo[] = [
   },
   {
     slug: "lendo-sua-carteira",
-    numero: 7,
+    numero: 10,
     nivel: "Mão na massa",
     emoji: "🔮",
     titulo: "Vendo o futuro: sua planilha da B3 vira projeção",

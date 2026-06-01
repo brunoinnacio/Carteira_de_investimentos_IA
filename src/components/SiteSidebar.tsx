@@ -102,6 +102,18 @@ const items: NavItem[] = [
     ),
   },
   {
+    href: "/tipos-de-investimento",
+    label: "Tipos de investimento",
+    group: "Aprender",
+    icon: (
+      <>
+        <rect x="3" y="13" width="4" height="8" rx="1" />
+        <rect x="10" y="8" width="4" height="13" rx="1" />
+        <rect x="17" y="4" width="4" height="17" rx="1" />
+      </>
+    ),
+  },
+  {
     href: "/glossario",
     label: "Glossário",
     group: "Aprender",
