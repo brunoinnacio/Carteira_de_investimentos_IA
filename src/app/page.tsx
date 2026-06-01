@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { PainelInicio } from "@/components/PainelInicio";
+import { SaudacaoInicio } from "@/components/SaudacaoInicio";
 
 type Tool = {
   emoji: string;
@@ -59,6 +60,7 @@ export default function Home() {
     <main className="flex-1">
       <section className="mx-auto w-full max-w-6xl px-6 pt-8 pb-12 sm:pt-12">
         <div className="flex flex-col items-start gap-5">
+          <SaudacaoInicio />
           <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
             <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />
             7 ferramentas no ar · 100% grátis
