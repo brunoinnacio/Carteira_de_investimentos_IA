@@ -162,7 +162,7 @@ export function Calendario() {
                 return (
                   <tr key={p.ticker} className="text-slate-700">
                     <td className="px-4 py-3 font-semibold text-slate-900">
-                      {p.ticker}
+                      {p.nome ?? p.ticker.replace(/^RF:/, "")}
                     </td>
                     <td className="px-4 py-3 text-right">{p.quantidade}</td>
                     <td className="px-4 py-3 text-right">

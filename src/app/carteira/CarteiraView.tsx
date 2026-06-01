@@ -170,6 +170,7 @@ function NovaPosicaoForm({ onAdd }: { onAdd: (p: Posicao) => void }) {
   const [provento, setProvento] = useState(0);
   const [nomeRF, setNomeRF] = useState("");
   const [valorRF, setValorRF] = useState(0);
+  const [taxaRF, setTaxaRF] = useState(11);
 
   const ehAcao = classe === "acao";
   const ehRF = classe === "rendaFixa";
@@ -201,6 +202,7 @@ function NovaPosicaoForm({ onAdd }: { onAdd: (p: Posicao) => void }) {
     setProvento(0);
     setNomeRF("");
     setValorRF(0);
+    setTaxaRF(11);
   }
 
   function submit(e: React.FormEvent) {
@@ -210,12 +212,14 @@ function NovaPosicaoForm({ onAdd }: { onAdd: (p: Posicao) => void }) {
 
     if (ehRF) {
       const nome = nomeRF.trim();
+      const taxa = Number.isFinite(taxaRF) && taxaRF > 0 ? taxaRF : 0;
       onAdd({
         ticker: rfKey(nome),
         nome,
         quantidade: 1,
         precoMedio: valorRF,
-        proventoMensalPorCota: 0,
+        // Renda mensal estimada a partir da taxa ao ano informada.
+        proventoMensalPorCota: (valorRF * (taxa / 100)) / 12,
         classe: "rendaFixa",
       });
     } else {
@@ -255,7 +259,7 @@ function NovaPosicaoForm({ onAdd }: { onAdd: (p: Posicao) => void }) {
       </div>
 
       {ehRF ? (
-        <div className="grid gap-3 sm:grid-cols-[minmax(0,_2fr)_minmax(0,_1fr)]">
+        <div className="grid gap-3 sm:grid-cols-[minmax(0,_2fr)_minmax(0,_1fr)_minmax(0,_1fr)]">
           <label className="flex flex-col gap-1.5">
             <span className="text-sm font-medium text-slate-700">
               Nome / descrição
@@ -274,6 +278,26 @@ function NovaPosicaoForm({ onAdd }: { onAdd: (p: Posicao) => void }) {
             onChange={setValorRF}
             help="Quanto você tem investido nesse título."
           />
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-slate-700">
+              Rende quanto / ano?
+            </span>
+            <div className="flex h-[42px] items-center rounded-lg border border-slate-300 bg-white px-3 shadow-sm focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100">
+              <input
+                type="number"
+                inputMode="decimal"
+                min={0}
+                step={0.1}
+                value={Number.isFinite(taxaRF) ? taxaRF : ""}
+                onChange={(e) => setTaxaRF(parseFloat(e.target.value))}
+                className="w-full bg-transparent text-base text-slate-900 outline-none tabular-nums"
+              />
+              <span className="text-sm text-slate-500">% a.a.</span>
+            </div>
+            <span className="text-xs text-slate-400">
+              Estimativa. ~11% segue a Selic/CDI atual.
+            </span>
+          </label>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-[130px_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1.2fr)]">
@@ -409,6 +433,10 @@ function RendaFixaTabela({
   onRemover: (ticker: string) => void;
 }) {
   const totalRF = posicoes.reduce((a, p) => a + p.precoMedio * p.quantidade, 0);
+  const totalRendaRF = posicoes.reduce(
+    (a, p) => a + p.proventoMensalPorCota * p.quantidade,
+    0
+  );
   return (
     <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 px-5 py-3">
@@ -416,8 +444,8 @@ function RendaFixaTabela({
           Renda fixa · {posicoes.length} título(s)
         </h2>
         <p className="text-xs text-slate-500">
-          Tesouro, CDB, LCI/LCA, COE, previdência e outras aplicações. Sem
-          cotação de mercado — o valor é o que você aplicou.
+          Tesouro, CDB, LCI/LCA, COE, previdência e outras aplicações. A renda/mês
+          é uma estimativa pela taxa ao ano informada.
         </p>
       </div>
       <div className="overflow-x-auto">
@@ -426,6 +454,7 @@ function RendaFixaTabela({
             <tr>
               <th className="px-4 py-3">Título</th>
               <th className="px-4 py-3 text-right">Valor aplicado</th>
+              <th className="px-4 py-3 text-right">Renda / mês (est.)</th>
               <th className="px-4 py-3 text-right">% da carteira</th>
               <th className="px-4 py-3" />
             </tr>
@@ -433,6 +462,7 @@ function RendaFixaTabela({
           <tbody className="divide-y divide-slate-200">
             {posicoes.map((p) => {
               const valor = p.precoMedio * p.quantidade;
+              const renda = p.proventoMensalPorCota * p.quantidade;
               const pct = total > 0 ? (valor / total) * 100 : 0;
               return (
                 <tr key={p.ticker} className="text-slate-700">
@@ -441,6 +471,9 @@ function RendaFixaTabela({
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
                     {brlPrecise(valor)}
+                  </td>
+                  <td className="px-4 py-3 text-right tabular-nums text-blue-700">
+                    {renda > 0 ? brlPrecise(renda) : <span className="text-slate-400">—</span>}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums text-slate-500">
                     {pct.toFixed(1)}%
@@ -463,6 +496,9 @@ function RendaFixaTabela({
               <td className="px-4 py-3">Total renda fixa</td>
               <td className="px-4 py-3 text-right tabular-nums">
                 {brlPrecise(totalRF)}
+              </td>
+              <td className="px-4 py-3 text-right tabular-nums text-blue-700">
+                {brlPrecise(totalRendaRF)}
               </td>
               <td className="px-4 py-3" colSpan={2} />
             </tr>
