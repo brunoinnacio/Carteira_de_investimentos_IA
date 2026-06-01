@@ -13,6 +13,30 @@ import {
   type Classe,
 } from "@/lib/carteira";
 import { brlPrecise } from "@/lib/format";
+import { PROVENTO_MENSAL_POR_TICKER } from "@/data/fiis";
+
+// Preenche o provento mensal/cota a partir da base curada de FIIs quando o
+// arquivo da B3 não traz essa informação (caso do relatório de Posição).
+function enriquecerProventos(posicoes: Posicao[]): {
+  posicoes: Posicao[];
+  preenchidos: string[];
+} {
+  const preenchidos: string[] = [];
+  const out = posicoes.map((p) => {
+    if (
+      (p.classe === "fii" || classeDe(p) === "fii") &&
+      p.proventoMensalPorCota === 0
+    ) {
+      const estimado = PROVENTO_MENSAL_POR_TICKER[p.ticker.toUpperCase()];
+      if (typeof estimado === "number" && estimado > 0) {
+        preenchidos.push(p.ticker);
+        return { ...p, proventoMensalPorCota: estimado };
+      }
+    }
+    return p;
+  });
+  return { posicoes: out, preenchidos };
+}
 
 const TICKER_REGEX_GLOBAL = /\b([A-Z]{4}1[12])\b/g;
 // Ações/units/BDRs: 4 letras + 1 ou 2 dígitos (PETR4, ITUB3, TAEE11, AAPL34).
@@ -479,6 +503,23 @@ function parseRows(rows: unknown[][]): ParseResult {
   }
   posicoes.sort((a, b) => a.ticker.localeCompare(b.ticker));
 
+  // Fallback: FIIs sem provento detectado no extrato recebem a estimativa da base.
+  let proventoEstimadoBase = 0;
+  for (const p of posicoes) {
+    if (classeDe(p) === "fii" && p.proventoMensalPorCota === 0) {
+      const est = PROVENTO_MENSAL_POR_TICKER[p.ticker.toUpperCase()];
+      if (typeof est === "number" && est > 0) {
+        p.proventoMensalPorCota = est;
+        proventoEstimadoBase++;
+      }
+    }
+  }
+  if (proventoEstimadoBase > 0) {
+    avisos.push(
+      `Estimei o provento mensal de ${proventoEstimadoBase} FII(s) pela nossa base — o calendário já fica preenchido. Ajuste na carteira se quiser os valores exatos.`
+    );
+  }
+
   const tickersIgnorados: TickerIgnorado[] = [];
 
   const nFii = posicoes.filter((p) => p.classe === "fii").length;
@@ -718,7 +759,11 @@ function parsePosicao(wb: XLSX.WorkBook): ParseResult {
     ...parseRendaFixaSheet(rowsOf("tesourodireto")),
   ];
 
-  const posicoes = [...fundos, ...acoes, ...rf];
+  const { posicoes, preenchidos } = enriquecerProventos([
+    ...fundos,
+    ...acoes,
+    ...rf,
+  ]);
 
   const avisos: string[] = [];
   const totalRF = rf.reduce((a, p) => a + p.precoMedio * p.quantidade, 0);
@@ -728,6 +773,11 @@ function parsePosicao(wb: XLSX.WorkBook): ParseResult {
   if (fundos.length + acoes.length > 0) {
     avisos.push(
       "A Posição da B3 traz o VALOR ATUAL, não o preço médio de compra. Usei o preço de fechamento como preço médio inicial — ajuste na carteira se quiser o custo real de cada ativo."
+    );
+  }
+  if (preenchidos.length > 0) {
+    avisos.push(
+      `Estimei o provento mensal de ${preenchidos.length} FII(s) pela nossa base — o calendário de proventos já fica preenchido. Confira e ajuste na carteira se quiser os valores exatos.`
     );
   }
   if (rf.length > 0) {

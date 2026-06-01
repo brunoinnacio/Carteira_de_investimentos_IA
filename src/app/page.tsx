@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { WaitlistForm } from "@/components/WaitlistForm";
+import { PainelInicio } from "@/components/PainelInicio";
 
 type Tool = {
   emoji: string;
@@ -12,7 +13,7 @@ const tools: Tool[] = [
   {
     emoji: "🔎",
     title: "Onde investir agora",
-    desc: "Screener de FIIs com preço ao vivo. Filtre por Dividend Yield, P/VP, segmento e veja o que está atrativo hoje.",
+    desc: "Escolha pelo seu objetivo: segurança (renda fixa), renda todo mês (FIIs) ou crescimento (ações). Com explorador de FIIs ao vivo.",
     href: "/oportunidades",
   },
   {
@@ -92,7 +93,11 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+        <div className="mt-8">
+          <PainelInicio />
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5">
           <div className="flex items-start gap-3">
             <span className="text-3xl" aria-hidden>
               🌱

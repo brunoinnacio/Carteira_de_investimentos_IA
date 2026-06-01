@@ -78,6 +78,14 @@ export const FIIS: FIISeed[] = [
   { ticker: "BCFF11", nome: "BTG Pactual FoF", segmento: "Fundo de Fundos", vpa: 70, proventoMensal: 0.5, liquidez: "Média" },
 ];
 
+/**
+ * Provento médio mensal por cota (R$) indexado por ticker — usado para
+ * pré-preencher a estimativa de renda na importação da carteira. É uma
+ * fotografia da curadoria (SNAPSHOT_DATE); o usuário pode ajustar.
+ */
+export const PROVENTO_MENSAL_POR_TICKER: Record<string, number> =
+  Object.fromEntries(FIIS.map((f) => [f.ticker, f.proventoMensal]));
+
 export const SEGMENTOS: Segmento[] = [
   "Papel",
   "Logística",
