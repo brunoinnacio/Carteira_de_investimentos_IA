@@ -126,6 +126,17 @@ const items: NavItem[] = [
     ),
   },
   {
+    href: "/kit",
+    label: "Kit grátis",
+    group: "Aprender",
+    icon: (
+      <>
+        <path d="M12 3v12m0 0-4-4m4 4 4-4" />
+        <path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4" />
+      </>
+    ),
+  },
+  {
     href: "/glossario",
     label: "Glossário",
     group: "Aprender",

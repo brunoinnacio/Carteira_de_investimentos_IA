@@ -1,0 +1,9 @@
+Ticker;Classe;Quantidade;Preço médio (R$);Provento mensal por cota (R$);Observação
+MXRF11;FII;100;10,50;0,10;Exemplo - apague e coloque os seus
+HGLG11;FII;20;160,00;1,15;Exemplo - apague e coloque os seus
+ITUB4;Ação;50;30,00;0,12;Exemplo - apague e coloque os seus
+Tesouro Selic 2029;Renda fixa;1;1500,00;13,75;Renda fixa: use o valor total aplicado em Quantidade=1
+;;;;;
+;;;;;
+;;;;;
+TOTAL;;=SOMA(C2:C99);;;

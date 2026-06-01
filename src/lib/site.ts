@@ -17,6 +17,7 @@ export const SITE_DESCRIPTION =
 export const PUBLIC_ROUTES: Array<{ path: string; priority: number }> = [
   { path: "/", priority: 1 },
   { path: "/aprender", priority: 0.95 },
+  { path: "/kit", priority: 0.9 },
   { path: "/guias", priority: 0.9 },
   { path: "/tipos-de-investimento", priority: 0.95 },
   { path: "/oportunidades", priority: 0.95 },

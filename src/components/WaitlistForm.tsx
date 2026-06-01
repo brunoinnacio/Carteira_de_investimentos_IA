@@ -6,7 +6,7 @@ import { joinWaitlist, type WaitlistResult } from "@/app/actions/waitlist";
 
 const initialState: WaitlistResult | null = null;
 
-function SubmitButton() {
+function SubmitButton({ cta }: { cta?: string }) {
   const { pending } = useFormStatus();
   return (
     <button
@@ -14,12 +14,18 @@ function SubmitButton() {
       disabled={pending}
       className="h-11 rounded-lg bg-blue-600 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
     >
-      {pending ? "Enviando..." : "Quero entrar"}
+      {pending ? "Enviando..." : cta ?? "Quero entrar"}
     </button>
   );
 }
 
-export function WaitlistForm() {
+export function WaitlistForm({
+  source,
+  cta,
+}: {
+  source?: string;
+  cta?: string;
+}) {
   const [state, formAction] = useActionState(joinWaitlist, initialState);
 
   return (
@@ -28,6 +34,7 @@ export function WaitlistForm() {
         action={formAction}
         className="mx-auto flex max-w-md flex-col gap-3 sm:flex-row"
       >
+        {source ? <input type="hidden" name="source" value={source} /> : null}
         <input
           type="email"
           name="email"
@@ -35,7 +42,7 @@ export function WaitlistForm() {
           placeholder="seu@email.com"
           className="h-11 flex-1 rounded-lg border border-slate-300 bg-white px-4 text-slate-900 placeholder-slate-400 shadow-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
         />
-        <SubmitButton />
+        <SubmitButton cta={cta} />
       </form>
 
       {state ? (

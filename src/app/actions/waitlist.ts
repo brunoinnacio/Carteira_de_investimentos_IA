@@ -15,6 +15,11 @@ export async function joinWaitlist(
   const rawEmail = formData.get("email");
   const email =
     typeof rawEmail === "string" ? rawEmail.trim().toLowerCase() : "";
+  const rawSource = formData.get("source");
+  const source =
+    typeof rawSource === "string" && rawSource.trim()
+      ? rawSource.trim().slice(0, 40)
+      : "landing";
 
   if (!email) {
     return { ok: false, message: "Informe um email para continuar." };
@@ -26,7 +31,7 @@ export async function joinWaitlist(
   const supabaseAdmin = getSupabaseAdmin();
   const { error } = await supabaseAdmin
     .from("waitlist")
-    .insert({ email, source: "landing" });
+    .insert({ email, source });
 
   if (error) {
     if (error.code === "23505") {
