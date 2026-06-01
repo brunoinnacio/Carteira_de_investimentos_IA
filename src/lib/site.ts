@@ -8,7 +8,7 @@ export const SITE_NAME = "Renda-se";
 export const SITE_SHORT = "R";
 
 /** Frase curta sob o nome, no topo do menu. */
-export const SITE_TAGLINE = "Aprenda a investir";
+export const SITE_TAGLINE = "Renda-se a investir";
 
 export const SITE_DESCRIPTION =
   "Aprenda a investir do zero — FIIs, ações, renda fixa e mais — com calculadoras, guias e linguagem simples. Sem economês, sem golpe. Grátis.";
