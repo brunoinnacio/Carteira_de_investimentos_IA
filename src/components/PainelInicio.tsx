@@ -74,15 +74,18 @@ function Donut({
 }
 
 export function PainelInicio() {
-  const { posicoes, hydrated, substituir } = useCarteira();
+  const { posicoes, hydrated, fonte: origemDados, substituir } = useCarteira();
   const router = useRouter();
   const [carregandoExemplo, setCarregandoExemplo] = useState(false);
   const { porClasse, total } = useMemo(
     () => totaisPorClasse(posicoes),
     [posicoes]
   );
+  // Simulação só para visitantes anônimos (nunca grava na conta de ninguém).
+  const podeSimular = origemDados === "local";
 
   function carregarExemplo() {
+    if (!podeSimular) return;
     if (
       posicoes.length > 0 &&
       !window.confirm(
@@ -166,7 +169,7 @@ export function PainelInicio() {
               >
                 Ver carteira completa →
               </Link>
-            ) : (
+            ) : podeSimular ? (
               <>
                 <button
                   type="button"
@@ -185,6 +188,13 @@ export function PainelInicio() {
                   Ou importar minha carteira da B3
                 </Link>
               </>
+            ) : (
+              <Link
+                href="/importacao"
+                className="inline-flex h-12 items-center justify-center rounded-xl bg-blue-600 px-5 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700"
+              >
+                Importar minha carteira da B3 →
+              </Link>
             )}
           </div>
           {!hydrated ? (

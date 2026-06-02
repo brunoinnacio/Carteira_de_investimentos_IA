@@ -25,6 +25,9 @@ export const CLASSE_LABEL: Record<Classe, string> = {
 };
 
 const STORAGE_KEY = "fiibrasil:carteira:v1";
+// Marca uma sessão anônima de simulação (carteira de exemplo). Fica isolada
+// do portfólio real e é descartada ao entrar/sair de uma conta.
+export const DEMO_KEY = "bolsacheia:demo";
 const TABELA = "carteira_posicoes";
 
 function normalizeTicker(raw: string): string {
@@ -250,27 +253,36 @@ export function useCarteira() {
 
     let mounted = true;
 
+    function descartarLocal() {
+      // Remove qualquer dado anônimo (carteira local + simulação) do navegador.
+      // Garante que uma conta nunca herde dados de outra pessoa neste device.
+      clearLocal();
+      try {
+        window.localStorage.removeItem(DEMO_KEY);
+      } catch {
+        /* ignore */
+      }
+    }
+
     async function entrarNaConta(userId: string) {
       userIdRef.current = userId;
       if (!supabase) return;
       setSincronizando(true);
+      // Ao entrar numa conta, o portfólio passa a viver SÓ na nuvem do usuário.
+      // Descartamos os dados locais imediatamente para não vazar entre contas.
+      descartarLocal();
       try {
-        const local = read();
-        let cloud = await cloudRead(supabase, userId);
-        // Migração: primeira vez logado com dados locais e nuvem vazia.
-        if (cloud.length === 0 && local.length > 0) {
-          await cloudReplaceAll(supabase, userId, local);
-          cloud = local;
-          clearLocal();
-        }
+        const cloud = await cloudRead(supabase, userId);
         if (!mounted) return;
         setFonte("nuvem");
         aplicar(cloud);
       } catch (e) {
-        console.error("Carteira: erro ao carregar da nuvem, usando local.", e);
+        console.error("Carteira: erro ao carregar da nuvem.", e);
         if (!mounted) return;
-        setFonte("local");
-        aplicar(read());
+        // Em caso de erro NÃO caímos para o local (poderia ser de outra
+        // pessoa). Mostramos vazio e tentamos de novo no próximo carregamento.
+        setFonte("nuvem");
+        aplicar([]);
       } finally {
         if (mounted) setSincronizando(false);
       }
@@ -278,8 +290,9 @@ export function useCarteira() {
 
     function sairDaConta() {
       userIdRef.current = null;
+      descartarLocal();
       setFonte("local");
-      aplicar(read());
+      aplicar([]);
     }
 
     if (supabase) {

@@ -16,6 +16,7 @@ import {
   useCarteira,
   classeDe,
   CLASSE_LABEL,
+  DEMO_KEY,
   type Posicao,
   type Classe,
 } from "@/lib/carteira";
@@ -26,8 +27,6 @@ import { brl, brlPrecise, percent } from "@/lib/format";
 
 type EditField = "precoMedio" | "quantidade" | "proventoMensalPorCota";
 type EditState = { ticker: string; field: EditField; raw: string } | null;
-
-const DEMO_KEY = "bolsacheia:demo";
 
 function formatBR(value: number, digits: number): string {
   return value.toLocaleString("pt-BR", {
@@ -370,7 +369,13 @@ function formatTime(iso: string | null): string {
   }
 }
 
-function OnboardingVazio({ onExemplo }: { onExemplo: () => void }) {
+function OnboardingVazio({
+  onExemplo,
+  podeSimular,
+}: {
+  onExemplo: () => void;
+  podeSimular: boolean;
+}) {
   const passos = [
     {
       n: "1",
@@ -414,16 +419,22 @@ function OnboardingVazio({ onExemplo }: { onExemplo: () => void }) {
       </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-        <button
-          type="button"
-          onClick={onExemplo}
-          className="inline-flex h-11 items-center justify-center rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-        >
-          Simular investimento (R$ 100 mil) →
-        </button>
+        {podeSimular ? (
+          <button
+            type="button"
+            onClick={onExemplo}
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+          >
+            Simular investimento (R$ 100 mil) →
+          </button>
+        ) : null}
         <Link
           href="/importacao"
-          className="inline-flex h-11 items-center justify-center rounded-lg border border-blue-600 bg-white px-5 text-sm font-semibold text-blue-700 transition hover:bg-blue-600 hover:text-white"
+          className={`inline-flex h-11 items-center justify-center rounded-lg px-5 text-sm font-semibold transition ${
+            podeSimular
+              ? "border border-blue-600 bg-white text-blue-700 hover:bg-blue-600 hover:text-white"
+              : "bg-blue-600 text-white shadow-sm hover:bg-blue-700"
+          }`}
         >
           Importar extrato da B3
         </Link>
@@ -522,8 +533,19 @@ function RendaFixaTabela({
 }
 
 export function CarteiraView() {
-  const { posicoes, hydrated, adicionar, remover, limpar, salvar, substituir } =
-    useCarteira();
+  const {
+    posicoes,
+    hydrated,
+    fonte,
+    adicionar,
+    remover,
+    limpar,
+    salvar,
+    substituir,
+  } = useCarteira();
+  // Simulação só faz sentido para quem NÃO está logado — assim ela nunca é
+  // gravada na nuvem de uma conta real.
+  const podeSimular = fonte === "local";
   const { investido, rendaMensal } = totaisCarteira(posicoes);
   const yieldCarteira =
     investido > 0 ? ((rendaMensal * 12) / investido) * 100 : 0;
@@ -541,6 +563,7 @@ export function CarteiraView() {
   }, []);
 
   const carregarExemplo = useCallback(() => {
+    if (!podeSimular) return;
     try {
       window.localStorage.setItem(DEMO_KEY, "1");
     } catch {
@@ -548,7 +571,7 @@ export function CarteiraView() {
     }
     setDemo(true);
     substituir(CARTEIRA_EXEMPLO);
-  }, [substituir]);
+  }, [podeSimular, substituir]);
 
   const sairDaDemo = useCallback(() => {
     try {
@@ -692,7 +715,7 @@ export function CarteiraView() {
       ) : null}
 
       {vazio ? (
-        <OnboardingVazio onExemplo={carregarExemplo} />
+        <OnboardingVazio onExemplo={carregarExemplo} podeSimular={podeSimular} />
       ) : (
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
