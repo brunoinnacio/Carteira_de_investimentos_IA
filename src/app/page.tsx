@@ -175,7 +175,7 @@ export default function Home() {
             <Step
               step="1"
               title="Você está começando"
-              desc="Ouviu falar que FIIs pagam todo mês isento de IR mas não sabe por onde começar nem quanto investir."
+              desc="Ouviu falar que dá pra ter renda todo mês com FIIs, dividendos e renda fixa, mas não sabe por onde começar nem quanto investir."
             />
             <Step
               step="2"
@@ -200,8 +200,8 @@ export default function Home() {
             Quero ser avisado das próximas atualizações
           </h2>
           <p className="mb-6 mt-3 text-slate-600">
-            Já tem 7 ferramentas no ar. Em breve: páginas individuais por FII e
-            alertas de preço e provento.
+            Já tem 7 ferramentas no ar. Em breve: páginas individuais por ativo
+            e alertas de preço e provento.
           </p>
           <WaitlistForm />
         </div>
