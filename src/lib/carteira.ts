@@ -215,8 +215,12 @@ export function useCarteira() {
   }, []);
 
   // Roda a persistência no destino ativo (nuvem se logado, local se anônimo).
+  // Retorna uma Promise para quem precisa AGUARDAR a gravação concluir antes
+  // de navegar (ex.: importação da B3, que recarrega a página em seguida).
   const persistir = useCallback(
-    (fn: (supabase: SupabaseClient, userId: string) => Promise<void>) => {
+    async (
+      fn: (supabase: SupabaseClient, userId: string) => Promise<void>
+    ): Promise<void> => {
       const userId = userIdRef.current;
       const supabase = supabaseRef.current;
       if (!userId || !supabase) {
@@ -224,11 +228,13 @@ export function useCarteira() {
         return;
       }
       setSincronizando(true);
-      fn(supabase, userId)
-        .catch((e) => {
-          console.error("Falha ao sincronizar carteira:", e);
-        })
-        .finally(() => setSincronizando(false));
+      try {
+        await fn(supabase, userId);
+      } catch (e) {
+        console.error("Falha ao sincronizar carteira:", e);
+      } finally {
+        setSincronizando(false);
+      }
     },
     []
   );
@@ -337,7 +343,7 @@ export function useCarteira() {
         ticker: normalizeTicker(p.ticker),
       }));
       aplicar(sanitized);
-      persistir((s, u) => cloudReplaceAll(s, u, sanitized));
+      return persistir((s, u) => cloudReplaceAll(s, u, sanitized));
     },
     [aplicar, persistir]
   );
@@ -345,13 +351,13 @@ export function useCarteira() {
   const adicionar = useCallback(
     (p: Posicao) => {
       const t = normalizeTicker(p.ticker);
-      if (!t) return;
+      if (!t) return Promise.resolve();
       const atual = [...posicoesRef.current];
       const idx = atual.findIndex((x) => x.ticker === t);
       if (idx >= 0) atual[idx] = { ...p, ticker: t };
       else atual.push({ ...p, ticker: t });
       aplicar(atual);
-      persistir((s, u) => cloudUpsert(s, u, [{ ...p, ticker: t }]));
+      return persistir((s, u) => cloudUpsert(s, u, [{ ...p, ticker: t }]));
     },
     [aplicar, persistir]
   );
@@ -361,21 +367,21 @@ export function useCarteira() {
       const t = normalizeTicker(ticker);
       const atual = posicoesRef.current.filter((p) => p.ticker !== t);
       aplicar(atual);
-      persistir((s, u) => cloudDelete(s, u, t));
+      return persistir((s, u) => cloudDelete(s, u, t));
     },
     [aplicar, persistir]
   );
 
   const limpar = useCallback(() => {
     aplicar([]);
-    persistir((s, u) => cloudReplaceAll(s, u, []));
+    return persistir((s, u) => cloudReplaceAll(s, u, []));
   }, [aplicar, persistir]);
 
   const substituir = useCallback(
     (novas: Posicao[]) => {
       const arr = dedupMerge(novas);
       aplicar(arr);
-      persistir((s, u) => cloudReplaceAll(s, u, arr));
+      return persistir((s, u) => cloudReplaceAll(s, u, arr));
     },
     [aplicar, persistir]
   );

@@ -799,6 +799,7 @@ function parsePosicao(wb: XLSX.WorkBook): ParseResult {
 export function Importacao() {
   const { substituir } = useCarteira();
   const [busy, setBusy] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ParseResult | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -931,9 +932,17 @@ export function Importacao() {
     }
   }
 
-  function confirmar() {
-    if (!result || result.posicoes.length === 0) return;
-    substituir(result.posicoes);
+  async function confirmar() {
+    if (!result || result.posicoes.length === 0 || saving) return;
+    setSaving(true);
+    // IMPORTANTE: aguardar a gravação concluir ANTES de navegar. Para usuários
+    // logados a gravação é na nuvem (assíncrona); recarregar a página antes de
+    // terminar cancelava a requisição e o import se perdia.
+    try {
+      await substituir(result.posicoes);
+    } finally {
+      setSaving(false);
+    }
     setResult(null);
     setFileName(null);
     if (typeof window !== "undefined") {
@@ -1235,10 +1244,10 @@ export function Importacao() {
               <button
                 type="button"
                 onClick={confirmar}
-                disabled={result.posicoes.length === 0}
+                disabled={result.posicoes.length === 0 || saving}
                 className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Substituir minha carteira por essa
+                {saving ? "Salvando…" : "Substituir minha carteira por essa"}
               </button>
             </div>
           </div>
