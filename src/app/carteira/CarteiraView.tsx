@@ -446,14 +446,61 @@ function OnboardingVazio({
   );
 }
 
+// Input inline para editar a taxa anual (%) de um título de renda fixa.
+// Converte a taxa em provento mensal/cota (valor × taxa / 12) ao confirmar.
+function TaxaRFInput({
+  p,
+  onEditarTaxa,
+}: {
+  p: Posicao;
+  onEditarTaxa: (ticker: string, proventoMensalPorCota: number) => void;
+}) {
+  const taxaAtual =
+    p.precoMedio > 0 ? (p.proventoMensalPorCota * 12) / p.precoMedio : 0;
+  const [raw, setRaw] = useState<string | null>(null);
+  const display =
+    raw ?? (taxaAtual > 0 ? formatBR(taxaAtual * 100, 2) : "");
+
+  function commit() {
+    if (raw === null) return;
+    const valor = raw.trim();
+    setRaw(null);
+    if (valor === "") return;
+    const taxa = parseFloat(valor.replace(/\./g, "").replace(",", ".")) / 100;
+    if (!Number.isFinite(taxa) || taxa < 0) return;
+    onEditarTaxa(p.ticker, (p.precoMedio * taxa) / 12);
+  }
+
+  return (
+    <span className="inline-flex items-center justify-end gap-1">
+      <input
+        value={display}
+        inputMode="decimal"
+        placeholder="—"
+        onFocus={(e) => e.currentTarget.select()}
+        onChange={(e) => setRaw(e.target.value.replace(/[^\d.,]/g, ""))}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.currentTarget.blur();
+        }}
+        className="w-14 rounded border border-slate-200 bg-white px-2 py-1 text-right text-sm tabular-nums text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100"
+        aria-label={`Taxa anual de ${p.nome ?? p.ticker}`}
+      />
+      <span className="text-xs text-slate-400">% a.a.</span>
+    </span>
+  );
+}
+
 function RendaFixaTabela({
   posicoes,
   total,
   onRemover,
+  onEditarTaxa,
 }: {
   posicoes: Posicao[];
   total: number;
   onRemover: (ticker: string) => void;
+  onEditarTaxa: (ticker: string, proventoMensalPorCota: number) => void;
 }) {
   const totalRF = posicoes.reduce((a, p) => a + p.precoMedio * p.quantidade, 0);
   const totalRendaRF = posicoes.reduce(
@@ -467,8 +514,9 @@ function RendaFixaTabela({
           Renda fixa · {posicoes.length} título(s)
         </h2>
         <p className="text-xs text-slate-500">
-          Tesouro, CDB, LCI/LCA, COE, previdência e outras aplicações. A renda/mês
-          é uma estimativa pela taxa ao ano informada.
+          Tesouro, CDB, LCI/LCA, COE, previdência e outras aplicações. A taxa a.a.
+          é estimada pelo tipo de cada título — clique para ajustar e a renda/mês
+          recalcula na hora.
         </p>
       </div>
       <div className="overflow-x-auto">
@@ -477,6 +525,7 @@ function RendaFixaTabela({
             <tr>
               <th className="px-4 py-3">Título</th>
               <th className="px-4 py-3 text-right">Valor aplicado</th>
+              <th className="px-4 py-3 text-right">Taxa a.a. (est.)</th>
               <th className="px-4 py-3 text-right">Renda / mês (est.)</th>
               <th className="px-4 py-3 text-right">% da carteira</th>
               <th className="px-4 py-3" />
@@ -494,6 +543,9 @@ function RendaFixaTabela({
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
                     {brlPrecise(valor)}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <TaxaRFInput p={p} onEditarTaxa={onEditarTaxa} />
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums text-blue-700">
                     {renda > 0 ? brlPrecise(renda) : <span className="text-slate-400">—</span>}
@@ -520,6 +572,7 @@ function RendaFixaTabela({
               <td className="px-4 py-3 text-right tabular-nums">
                 {brlPrecise(totalRF)}
               </td>
+              <td className="px-4 py-3" />
               <td className="px-4 py-3 text-right tabular-nums text-blue-700">
                 {brlPrecise(totalRendaRF)}
               </td>
@@ -1074,6 +1127,9 @@ export function CarteiraView() {
             posicoes={posicoesRF}
             total={alocacao.total}
             onRemover={remover}
+            onEditarTaxa={(ticker, provento) =>
+              commitEdit(ticker, "proventoMensalPorCota", provento)
+            }
           />
         ) : null}
         </>

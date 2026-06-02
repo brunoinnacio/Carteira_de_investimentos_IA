@@ -38,28 +38,84 @@ function enriquecerProventos(posicoes: Posicao[]): {
   return { posicoes: out, preenchidos };
 }
 
-// Taxas anuais usadas SÓ para ESTIMAR a renda mensal quando o extrato da B3
-// não informa (a Posição não traz juros de renda fixa nem dividendos de ações,
-// e FIIs fora da nossa base ficam sem provento). Tudo é editável por posição
-// na carteira — é só um ponto de partida proporcional ao valor investido.
-const TAXA_ANUAL_ESTIMADA: Partial<Record<Classe, number>> = {
-  rendaFixa: 0.11, // pós-fixado ~ CDI/Selic
-  acao: 0.06, // dividend yield médio do mercado
-  fii: 0.09, // fallback p/ FII fora da base (~9% a.a.)
-};
+// Referências de mercado (aproximadas) para estimar rendimentos quando a B3
+// não informa. Editável por posição na carteira depois.
+const CDI_ANUAL = 0.11; // ~ Selic/CDI
+const IPCA_ANUAL = 0.045; // inflação de referência
 
-// Preenche o provento mensal/cota estimado das posições que ficaram em zero,
-// com base na taxa média da classe. Retorna quantas posições foram estimadas
-// por classe. Mutável: ajusta os objetos recebidos.
+// Dividend yield anual aproximado de pagadoras conhecidas; usado só como ponto
+// de partida. Demais ações usam a média do mercado.
+const DY_ANUAL_ACAO: Record<string, number> = {
+  TAEE11: 0.085, TRPL4: 0.08, BBAS3: 0.09, BBSE3: 0.08, ITUB4: 0.055,
+  ITSA4: 0.07, BBDC4: 0.06, PETR4: 0.1, VALE3: 0.07, CMIG4: 0.08,
+  CPLE6: 0.06, EGIE3: 0.06, VIVT3: 0.06, SAPR11: 0.05, CXSE3: 0.07,
+};
+const DY_ANUAL_ACAO_PADRAO = 0.05;
+const DY_ANUAL_FII_PADRAO = 0.09; // FII fora da nossa base curada
+
+// Lê o nome do produto da renda fixa (Posição da B3) e estima a taxa anual de
+// mercado pelo tipo: %CDI explícito, IPCA+, prefixado, Tesouro Selic, LCI/LCA,
+// CRI/CRA/debênture, COE, ou CDB/genérico (~100% CDI).
+function estimarTaxaAnualRF(nomeRaw: string): number {
+  const n = (nomeRaw || "").toUpperCase();
+
+  const mCdi = n.match(/(\d{2,3})(?:[.,]\d+)?\s*%\s*(?:DO\s*)?CDI/);
+  if (mCdi) return (parseFloat(mCdi[1]) / 100) * CDI_ANUAL;
+
+  if (n.includes("IPCA") || n.includes("NTN-B")) {
+    const mReal = n.match(/IPCA\s*\+?\s*(\d{1,2}(?:[.,]\d+)?)\s*%/);
+    const real = mReal ? parseFloat(mReal[1].replace(",", ".")) / 100 : 0.06;
+    return IPCA_ANUAL + real;
+  }
+
+  if (
+    n.includes("PREFIX") ||
+    n.includes("PRÉ") ||
+    n.includes("PRE-") ||
+    n.includes("LTN") ||
+    n.includes("NTN-F")
+  ) {
+    const mPre = n.match(/(\d{1,2}(?:[.,]\d+)?)\s*%/);
+    return mPre ? parseFloat(mPre[1].replace(",", ".")) / 100 : CDI_ANUAL;
+  }
+
+  if (n.includes("SELIC") || n.includes("LFT")) return CDI_ANUAL;
+  if (n.includes("LCI") || n.includes("LCA")) return 0.95 * CDI_ANUAL;
+  if (
+    n.includes("CRI") ||
+    n.includes("CRA") ||
+    n.includes("DEBÊNTURE") ||
+    n.includes("DEBENTURE") ||
+    n.includes("DEB ")
+  ) {
+    return IPCA_ANUAL + 0.065;
+  }
+  if (n.includes("COE")) return 0.07;
+
+  return CDI_ANUAL; // CDB / RDB / LC / pós-fixado genérico
+}
+
+// Estima a taxa anual de uma posição conforme a classe e (na RF) o tipo do
+// título. Retorna 0 quando não há base para estimar.
+function taxaAnualEstimada(p: Posicao): number {
+  const classe = classeDe(p);
+  if (classe === "rendaFixa") return estimarTaxaAnualRF(p.nome ?? p.ticker);
+  if (classe === "acao")
+    return DY_ANUAL_ACAO[p.ticker.toUpperCase()] ?? DY_ANUAL_ACAO_PADRAO;
+  if (classe === "fii") return DY_ANUAL_FII_PADRAO;
+  return 0;
+}
+
+// Preenche o provento mensal/cota estimado das posições que ficaram em zero.
+// Retorna quantas posições foram estimadas por classe. Muta os objetos.
 function estimarRendaFaltante(posicoes: Posicao[]): Record<Classe, number> {
   const contagem: Record<Classe, number> = { fii: 0, acao: 0, rendaFixa: 0 };
   for (const p of posicoes) {
     if (p.proventoMensalPorCota > 0 || p.precoMedio <= 0) continue;
-    const classe = classeDe(p);
-    const taxa = TAXA_ANUAL_ESTIMADA[classe];
+    const taxa = taxaAnualEstimada(p);
     if (!taxa) continue;
     p.proventoMensalPorCota = (p.precoMedio * taxa) / 12;
-    contagem[classe]++;
+    contagem[classeDe(p)]++;
   }
   return contagem;
 }
@@ -71,16 +127,16 @@ function avisarEstimativaRenda(
 ) {
   const partes: string[] = [];
   if (contagem.rendaFixa > 0)
-    partes.push(`${contagem.rendaFixa} título(s) de renda fixa a ~11% a.a.`);
+    partes.push(`${contagem.rendaFixa} título(s) de renda fixa`);
   if (contagem.acao > 0)
-    partes.push(`${contagem.acao} ação(ões) a ~6% a.a. de dividendos`);
+    partes.push(`dividendos de ${contagem.acao} ação(ões)`);
   if (contagem.fii > 0)
-    partes.push(`${contagem.fii} FII(s) a ~9% a.a.`);
+    partes.push(`${contagem.fii} FII(s) fora da base`);
   if (partes.length === 0) return;
   avisos.push(
-    `A B3 não informa o rendimento de renda fixa nem os dividendos de ações. Para a renda mensal fazer sentido, estimei: ${partes.join(
-      "; "
-    )}. São médias editáveis em cada posição na carteira — ajuste para os valores reais quando souber.`
+    `A B3 não informa o rendimento de renda fixa nem os dividendos de ações. Estimei pela taxa de mercado de cada tipo (Tesouro Selic/CDB ~CDI, IPCA+, LCI/LCA, prefixado, COE) e pelo dividend yield médio: ${partes.join(
+      ", "
+    )}. Dá para ajustar a taxa de cada título direto na carteira (coluna "Taxa a.a.").`
   );
 }
 
