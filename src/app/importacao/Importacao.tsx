@@ -38,6 +38,52 @@ function enriquecerProventos(posicoes: Posicao[]): {
   return { posicoes: out, preenchidos };
 }
 
+// Taxas anuais usadas SÓ para ESTIMAR a renda mensal quando o extrato da B3
+// não informa (a Posição não traz juros de renda fixa nem dividendos de ações,
+// e FIIs fora da nossa base ficam sem provento). Tudo é editável por posição
+// na carteira — é só um ponto de partida proporcional ao valor investido.
+const TAXA_ANUAL_ESTIMADA: Partial<Record<Classe, number>> = {
+  rendaFixa: 0.11, // pós-fixado ~ CDI/Selic
+  acao: 0.06, // dividend yield médio do mercado
+  fii: 0.09, // fallback p/ FII fora da base (~9% a.a.)
+};
+
+// Preenche o provento mensal/cota estimado das posições que ficaram em zero,
+// com base na taxa média da classe. Retorna quantas posições foram estimadas
+// por classe. Mutável: ajusta os objetos recebidos.
+function estimarRendaFaltante(posicoes: Posicao[]): Record<Classe, number> {
+  const contagem: Record<Classe, number> = { fii: 0, acao: 0, rendaFixa: 0 };
+  for (const p of posicoes) {
+    if (p.proventoMensalPorCota > 0 || p.precoMedio <= 0) continue;
+    const classe = classeDe(p);
+    const taxa = TAXA_ANUAL_ESTIMADA[classe];
+    if (!taxa) continue;
+    p.proventoMensalPorCota = (p.precoMedio * taxa) / 12;
+    contagem[classe]++;
+  }
+  return contagem;
+}
+
+// Adiciona um aviso transparente sobre quais rendimentos foram estimados.
+function avisarEstimativaRenda(
+  avisos: string[],
+  contagem: Record<Classe, number>
+) {
+  const partes: string[] = [];
+  if (contagem.rendaFixa > 0)
+    partes.push(`${contagem.rendaFixa} título(s) de renda fixa a ~11% a.a.`);
+  if (contagem.acao > 0)
+    partes.push(`${contagem.acao} ação(ões) a ~6% a.a. de dividendos`);
+  if (contagem.fii > 0)
+    partes.push(`${contagem.fii} FII(s) a ~9% a.a.`);
+  if (partes.length === 0) return;
+  avisos.push(
+    `A B3 não informa o rendimento de renda fixa nem os dividendos de ações. Para a renda mensal fazer sentido, estimei: ${partes.join(
+      "; "
+    )}. São médias editáveis em cada posição na carteira — ajuste para os valores reais quando souber.`
+  );
+}
+
 const TICKER_REGEX_GLOBAL = /\b([A-Z]{4}1[12])\b/g;
 // Ações/units/BDRs: 4 letras + 1 ou 2 dígitos (PETR4, ITUB3, TAEE11, AAPL34).
 const TICKER_ANY_REGEX = /\b([A-Z]{4}\d{1,2})\b/;
@@ -520,15 +566,20 @@ function parseRows(rows: unknown[][]): ParseResult {
     );
   }
 
+  // Estima a renda das demais classes (ações, FIIs sem base) para a renda
+  // mensal ser proporcional ao valor investido.
+  const estimativa = estimarRendaFaltante(posicoes);
+
   const tickersIgnorados: TickerIgnorado[] = [];
 
   const nFii = posicoes.filter((p) => p.classe === "fii").length;
   const nAcao = posicoes.filter((p) => p.classe === "acao").length;
-  if (nAcao > 0) {
+  if (nFii > 0 || nAcao > 0) {
     avisos.push(
-      `Reconheci ${nFii} FII(s) e ${nAcao} ação(ões) no extrato. As ações entram sem dividendo estimado — informe se quiser na carteira.`
+      `Reconheci ${nFii} FII(s) e ${nAcao} ação(ões) no extrato.`
     );
   }
+  avisarEstimativaRenda(avisos, estimativa);
   if (estimados.length > 0) {
     const lista = estimados.slice(0, 5).join(", ");
     avisos.push(
@@ -765,6 +816,10 @@ function parsePosicao(wb: XLSX.WorkBook): ParseResult {
     ...rf,
   ]);
 
+  // Estima a renda mensal de renda fixa, ações e FIIs fora da base (a Posição
+  // da B3 não traz esses rendimentos). Sem isso, a renda mensal fica irreal.
+  const estimativa = estimarRendaFaltante(posicoes);
+
   const avisos: string[] = [];
   const totalRF = rf.reduce((a, p) => a + p.precoMedio * p.quantidade, 0);
   avisos.push(
@@ -785,6 +840,7 @@ function parsePosicao(wb: XLSX.WorkBook): ParseResult {
       `Renda fixa/COE somam ${brlPrecise(totalRF)} pelo valor atualizado (não têm cotação de mercado).`
     );
   }
+  avisarEstimativaRenda(avisos, estimativa);
 
   return {
     movimentos: [],
