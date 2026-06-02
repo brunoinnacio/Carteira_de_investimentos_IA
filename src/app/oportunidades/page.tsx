@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Screener } from "./Screener";
+import { ExploradorAtivos } from "./ExploradorAtivos";
 
 export const metadata: Metadata = {
   title: "Onde investir agora",
   description:
-    "Guia simples para iniciantes: descubra onde investir hoje de acordo com o seu objetivo — segurança (renda fixa), renda mensal (FIIs) ou crescimento (ações). Ferramenta educacional, não é recomendação.",
+    "Guia simples para iniciantes: descubra onde investir hoje de acordo com o seu objetivo — segurança (renda fixa), renda mensal (FIIs) ou dividendos de ações. Explorador de FIIs e ações com preço ao vivo. Ferramenta educacional, não é recomendação.",
   alternates: { canonical: "/oportunidades" },
 };
 
@@ -38,18 +38,18 @@ const OPCOES: Opcao[] = [
     desc: "Fundos imobiliários pagam um pinguinho na sua conta quase todo mês, geralmente isento de Imposto de Renda.",
     exemplo: "Use o explorador de FIIs aqui embaixo para ver o que está atrativo.",
     cor: "blue",
-    href: "#explorar-fiis",
+    href: "#explorar",
     cta: "Explorar FIIs ↓",
   },
   {
     emoji: "🚀",
     objetivo: "Quero crescer no longo prazo",
     tipo: "Ações",
-    desc: "Comprar pedacinhos de empresas. Sobe e desce mais, mas tende a render mais em muitos anos. Para dinheiro que pode ficar parado.",
-    exemplo: "Ex.: ações de empresas grandes e lucrativas, ou um ETF como o BOVA11.",
+    desc: "Comprar pedacinhos de empresas. Sobe e desce mais, mas tende a render mais em muitos anos. Muitas ainda pagam dividendos.",
+    exemplo: "Use o explorador de ações aqui embaixo para ver quem paga bons dividendos.",
     cor: "violet",
-    href: "/tipos-de-investimento",
-    cta: "Entender ações",
+    href: "#explorar",
+    cta: "Explorar ações ↓",
   },
 ];
 
@@ -128,18 +128,18 @@ export default function Page() {
           .
         </div>
 
-        <div id="explorar-fiis" className="scroll-mt-20 border-t border-slate-200 pt-10">
+        <div id="explorar" className="scroll-mt-20 border-t border-slate-200 pt-10">
           <header className="mb-6 max-w-2xl">
             <h2 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
-              Explorar FIIs (renda mensal)
+              Explorar ativos de renda
             </h2>
             <p className="mt-2 text-slate-600">
-              Filtre fundos imobiliários por critérios objetivos. O preço é ao
-              vivo e o P/VP e o Dividend Yield são calculados na hora. Não é
+              Filtre FIIs e ações pagadoras de dividendos por critérios
+              objetivos. Preço ao vivo, indicadores calculados na hora. Não é
               recomendação — é uma ferramenta para você decidir com clareza.
             </p>
           </header>
-          <Screener />
+          <ExploradorAtivos />
         </div>
       </section>
     </main>
