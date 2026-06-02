@@ -19,7 +19,7 @@ const tools: Tool[] = [
   },
   {
     emoji: "🧮",
-    title: "Quanto investir para viver de FII",
+    title: "Quanto investir para viver de renda passiva",
     desc: "Diga quanto quer receber por mês. Mostramos o patrimônio necessário e quanto tempo leva pra chegar lá.",
     href: "/calculadora-renda",
   },

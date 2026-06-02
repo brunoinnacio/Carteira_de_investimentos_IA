@@ -91,17 +91,17 @@ export function CalculadoraRenda() {
             prefix="R$"
             min={0}
             step={100}
-            help="Quanto você quer receber por mês, livre, só de FII."
+            help="Quanto você quer receber por mês, livre, de renda passiva."
           />
           <NumberInput
-            label="Dividend Yield médio anual dos FIIs"
+            label="Rentabilidade média anual da carteira"
             value={dividendYieldAnual}
             onChange={setDividendYieldAnual}
             suffix="% ao ano"
             min={0.1}
             max={30}
             step={0.5}
-            help="Hoje a média do IFIX gira em torno de 8% a 11% ao ano."
+            help="FIIs e renda fixa giram em torno de 8% a 12% ao ano; ajuste ao seu caso."
           />
           <NumberInput
             label="Quanto vou aportar todo mês"
@@ -113,7 +113,7 @@ export function CalculadoraRenda() {
             help="Quanto você consegue investir mensalmente sem apertar."
           />
           <NumberInput
-            label="Patrimônio que já tenho em FIIs"
+            label="Patrimônio que já tenho investido"
             value={patrimonioAtual}
             onChange={setPatrimonioAtual}
             prefix="R$"
@@ -135,7 +135,7 @@ export function CalculadoraRenda() {
               : "—"}
           </p>
           <p className="mt-2 text-sm text-blue-50/90">
-            Investido em FIIs com DY de{" "}
+            Rendendo{" "}
             <strong className="text-white">
               {percent(dividendYieldAnual)}
             </strong>{" "}
