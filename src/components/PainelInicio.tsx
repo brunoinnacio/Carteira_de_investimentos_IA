@@ -158,11 +158,11 @@ export function PainelInicio() {
             ))}
           </ul>
 
-          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+          <div className="mt-5 flex flex-col gap-2.5">
             {temCarteira ? (
               <Link
                 href="/carteira"
-                className="inline-flex h-10 flex-1 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                className="inline-flex h-11 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
               >
                 Ver carteira completa →
               </Link>
@@ -172,17 +172,17 @@ export function PainelInicio() {
                   type="button"
                   onClick={carregarExemplo}
                   disabled={carregandoExemplo}
-                  className="inline-flex h-10 flex-1 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                  className="inline-flex h-12 items-center justify-center rounded-xl bg-blue-600 px-5 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
                 >
                   {carregandoExemplo
                     ? "Carregando…"
-                    : "Ver demonstração (R$ 100 mil) →"}
+                    : "Simular investimento (R$ 100 mil) →"}
                 </button>
                 <Link
                   href="/importacao"
-                  className="inline-flex h-10 flex-1 items-center justify-center rounded-lg border border-blue-600 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-600 hover:text-white"
+                  className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700"
                 >
-                  Importar minha carteira
+                  Ou importar minha carteira da B3
                 </Link>
               </>
             )}

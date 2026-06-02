@@ -25,8 +25,8 @@ const tools: Tool[] = [
   },
   {
     emoji: "📊",
-    title: "Bola de neve",
-    desc: "Visualize sua renda mensal crescendo mês a mês com aporte + reinvestimento. Gráfico interativo.",
+    title: "Renda que cresce",
+    desc: "Veja sua renda mensal crescer mês a mês com aporte e reinvestimento (o efeito bola de neve). Gráfico interativo.",
     href: "/bola-de-neve",
   },
   {

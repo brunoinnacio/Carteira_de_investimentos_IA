@@ -419,7 +419,7 @@ function OnboardingVazio({ onExemplo }: { onExemplo: () => void }) {
           onClick={onExemplo}
           className="inline-flex h-11 items-center justify-center rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
         >
-          Carregar carteira de exemplo (R$ 100 mil) →
+          Simular investimento (R$ 100 mil) →
         </button>
         <Link
           href="/importacao"
@@ -676,17 +676,17 @@ export function CarteiraView() {
         <div className="flex flex-col gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="flex items-center gap-2 text-sm text-amber-900">
             <span className="inline-flex items-center rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
-              Demonstração
+              Simulação
             </span>
-            Você está vendo uma carteira de exemplo (R$ 100 mil). Os números não
-            são reais.
+            Você está simulando um investimento de exemplo (R$ 100 mil). Os
+            números não são reais.
           </p>
           <button
             type="button"
             onClick={sairDaDemo}
             className="inline-flex h-9 shrink-0 items-center justify-center rounded-lg border border-amber-400 bg-white px-4 text-sm font-semibold text-amber-800 transition hover:bg-amber-100"
           >
-            Sair da demonstração
+            Sair da simulação
           </button>
         </div>
       ) : null}

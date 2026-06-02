@@ -21,6 +21,46 @@ const items: NavItem[] = [
     icon: <path d="M3 12 12 3l9 9M5 10v10h5v-6h4v6h5V10" />,
   },
   {
+    href: "/carteira",
+    label: "Minha carteira",
+    group: "Carteira",
+    icon: (
+      <>
+        <path d="M3 7h18v12H3z" />
+        <path d="M3 7V5a2 2 0 0 1 2-2h10l2 4" />
+        <circle cx="17" cy="13" r="1.5" />
+      </>
+    ),
+  },
+  {
+    href: "/importacao",
+    label: "Importar B3",
+    group: "Carteira",
+    icon: <path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14" />,
+  },
+  {
+    href: "/calendario",
+    label: "Calendário",
+    group: "Carteira",
+    icon: (
+      <>
+        <rect x="3" y="5" width="18" height="16" rx="2" />
+        <path d="M3 9h18M8 3v4M16 3v4" />
+      </>
+    ),
+  },
+  {
+    href: "/oportunidades",
+    label: "Onde investir",
+    group: "Descobrir",
+    icon: (
+      <>
+        <circle cx="11" cy="11" r="7" />
+        <path d="M21 21l-4.3-4.3M11 8v6M8 11h6" />
+      </>
+    ),
+  },
+  {
     href: "/calculadora-renda",
     label: "Quanto investir",
     group: "Calculadoras",
@@ -28,7 +68,7 @@ const items: NavItem[] = [
   },
   {
     href: "/bola-de-neve",
-    label: "Bola de neve",
+    label: "Renda que cresce",
     group: "Calculadoras",
     icon: <path d="M3 17 9 11l4 4 8-8M14 7h7v7" />,
   },
@@ -51,46 +91,6 @@ const items: NavItem[] = [
     ),
   },
   {
-    href: "/oportunidades",
-    label: "Onde investir",
-    group: "Descobrir",
-    icon: (
-      <>
-        <circle cx="11" cy="11" r="7" />
-        <path d="M21 21l-4.3-4.3M11 8v6M8 11h6" />
-      </>
-    ),
-  },
-  {
-    href: "/calendario",
-    label: "Calendário",
-    group: "Carteira",
-    icon: (
-      <>
-        <rect x="3" y="5" width="18" height="16" rx="2" />
-        <path d="M3 9h18M8 3v4M16 3v4" />
-      </>
-    ),
-  },
-  {
-    href: "/carteira",
-    label: "Minha carteira",
-    group: "Carteira",
-    icon: (
-      <>
-        <path d="M3 7h18v12H3z" />
-        <path d="M3 7V5a2 2 0 0 1 2-2h10l2 4" />
-        <circle cx="17" cy="13" r="1.5" />
-      </>
-    ),
-  },
-  {
-    href: "/importacao",
-    label: "Importar B3",
-    group: "Carteira",
-    icon: <path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14" />,
-  },
-  {
     href: "/aprender",
     label: "Comece do zero",
     group: "Aprender",
@@ -99,6 +99,17 @@ const items: NavItem[] = [
         <path d="M12 4v16" />
         <path d="M12 6c-1.5-1.5-4-2-6-2v13c2 0 4.5.5 6 2" />
         <path d="M12 6c1.5-1.5 4-2 6-2v13c-2 0-4.5.5-6 2" />
+      </>
+    ),
+  },
+  {
+    href: "/kit",
+    label: "Kit grátis",
+    group: "Aprender",
+    icon: (
+      <>
+        <path d="M12 3v12m0 0-4-4m4 4 4-4" />
+        <path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4" />
       </>
     ),
   },
@@ -126,17 +137,6 @@ const items: NavItem[] = [
     ),
   },
   {
-    href: "/kit",
-    label: "Kit grátis",
-    group: "Aprender",
-    icon: (
-      <>
-        <path d="M12 3v12m0 0-4-4m4 4 4-4" />
-        <path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4" />
-      </>
-    ),
-  },
-  {
     href: "/glossario",
     label: "Glossário",
     group: "Aprender",
@@ -152,9 +152,9 @@ const items: NavItem[] = [
 
 const groups: Array<NavItem["group"]> = [
   "Início",
-  "Calculadoras",
-  "Descobrir",
   "Carteira",
+  "Descobrir",
+  "Calculadoras",
   "Aprender",
 ];
 

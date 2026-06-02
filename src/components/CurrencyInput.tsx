@@ -57,6 +57,7 @@ export function CurrencyInput({
           value={display}
           placeholder={placeholder ?? "0,00"}
           aria-invalid={error ? true : undefined}
+          onFocus={(e) => e.currentTarget.select()}
           onChange={handleChange}
           className="flex-1 bg-transparent px-2 py-2.5 text-base text-slate-900 outline-none"
         />

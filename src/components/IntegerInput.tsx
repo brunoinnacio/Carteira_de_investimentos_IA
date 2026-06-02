@@ -41,6 +41,7 @@ export function IntegerInput({
         value={display}
         placeholder={placeholder ?? "0"}
         aria-invalid={error ? true : undefined}
+        onFocus={(e) => e.currentTarget.select()}
         onChange={handleChange}
         className={`h-[42px] rounded-lg border bg-white px-3 text-base text-slate-900 placeholder-slate-400 shadow-sm outline-none focus:ring-2 ${
           error
