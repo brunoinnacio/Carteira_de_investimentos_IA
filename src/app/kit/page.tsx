@@ -5,7 +5,7 @@ import { WaitlistForm } from "@/components/WaitlistForm";
 export const metadata: Metadata = {
   title: "Kit grátis do investidor iniciante",
   description:
-    "Baixe grátis a planilha de carteira + o checklist de quem está começando a investir. Sem pagar nada, sem economês.",
+    "Baixe grátis a planilha de carteira + o checklist de quem está começando a investir. Sem pagar nada, sem palavras difíceis.",
   alternates: { canonical: "/kit" },
 };
 

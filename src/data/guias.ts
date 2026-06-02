@@ -46,7 +46,7 @@ export const GUIAS: Guia[] = [
     slug: "como-comecar-a-investir-do-zero",
     titulo: "Como começar a investir do zero em 2026 (guia para iniciantes)",
     descricao:
-      "Um passo a passo simples e sem economês para sair do zero: organizar as contas, montar a reserva e dar o primeiro passo nos investimentos — mesmo com pouco dinheiro.",
+      "Um passo a passo simples e sem palavras difíceis para sair do zero: organizar as contas, montar a reserva e dar o primeiro passo nos investimentos — mesmo com pouco dinheiro.",
     leituraMin: 7,
     intro: [
       "Se você nunca investiu e sente que isso é coisa de gente rica, complicada ou até golpe, respira: começar é mais simples do que parece, e dá pra fazer com pouco dinheiro. Este guia te leva do zero, sem jargão.",
@@ -101,7 +101,7 @@ export const GUIAS: Guia[] = [
     ],
     ctas: [
       {
-        texto: "Comece pela trilha do zero, sem economês, no seu ritmo.",
+        texto: "Comece pela trilha do zero, sem palavras difíceis, no seu ritmo.",
         href: "/aprender",
         label: "Fazer a trilha do zero",
       },

@@ -8,7 +8,7 @@ import {
 } from "@/data/investimentos";
 
 export const metadata: Metadata = {
-  title: "Tipos de investimento · O cardápio completo sem economês",
+  title: "Tipos de investimento · O cardápio completo sem palavras difíceis",
   description:
     "Renda fixa, ações, FIIs, ETFs, fundos e cripto explicados de forma simples: o que é, como você ganha, o risco e pra quem é. Sem jargão.",
   alternates: { canonical: "/tipos-de-investimento" },
@@ -170,7 +170,7 @@ export default function Page() {
           </h2>
           <p className="mt-1 text-sm leading-relaxed text-slate-600">
             Faça a trilha &ldquo;Comece do zero&rdquo;: ela te leva do medo até a
-            sua primeira renda, um passo de cada vez e sem economês.
+            sua primeira renda, um passo de cada vez e sem palavras difíceis.
           </p>
           <Link
             href="/aprender"

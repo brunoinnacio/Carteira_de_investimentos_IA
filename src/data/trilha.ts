@@ -1,5 +1,5 @@
 /**
- * Trilha "Comece do zero" — educação financeira sem economês.
+ * Trilha "Comece do zero" — educação financeira sem palavras difíceis.
  *
  * Princípio: cada módulo explica UMA ideia usando uma analogia universal,
  * que funciona tanto para uma criança de 8 anos quanto para um adulto de 50.
@@ -227,7 +227,7 @@ export const MODULOS: Modulo[] = [
     numero: 5,
     nivel: "Primeiros passos",
     emoji: "🍽️",
-    titulo: "O cardápio de investimentos (sem economês)",
+    titulo: "O cardápio de investimentos (sem palavras difíceis)",
     resumo:
       "Existem vários jeitos de fazer o dinheiro trabalhar. Conheça os principais como num cardápio — e veja qual combina com você.",
     analogia: {

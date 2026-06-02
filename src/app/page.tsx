@@ -68,7 +68,7 @@ export default function Home() {
           <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-5xl">
             Aprenda a investir do zero{" "}
             <span className="text-blue-700">e a viver de renda</span>. Sem
-            economês, sem golpe.
+            palavras difíceis, sem golpe.
           </h1>
           <p className="max-w-2xl text-base text-slate-600 sm:text-lg">
             Renda fixa, ações, FIIs e mais — explicados com histórias simples

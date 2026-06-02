@@ -61,7 +61,7 @@ export default function OgImage() {
               maxWidth: "1000px",
             }}
           >
-            Aprenda a investir do zero, sem economês
+            Aprenda a investir do zero, sem palavras difíceis
           </div>
           <div
             style={{

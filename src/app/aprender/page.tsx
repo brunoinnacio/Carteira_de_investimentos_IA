@@ -3,7 +3,7 @@ import Link from "next/link";
 import { MODULOS, NIVEIS } from "@/data/trilha";
 
 export const metadata: Metadata = {
-  title: "Comece do zero · Educação financeira sem economês",
+  title: "Comece do zero · Educação financeira sem palavras difíceis",
   description:
     "Aprenda a investir do absoluto zero, com analogias simples que servem dos 8 aos 80 anos. Sem jargão, sem golpe. Do medo à sua primeira renda mensal.",
   alternates: { canonical: "/aprender" },
@@ -21,7 +21,7 @@ export default function Page() {
       <section className="mx-auto w-full max-w-3xl px-6 pt-8 pb-6 sm:pt-12">
         <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
           <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />
-          Trilha gratuita · sem economês
+          Trilha gratuita · sem palavras difíceis
         </span>
         <h1 className="mt-4 text-3xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-4xl">
           Comece do zero, sem medo e sem jargão

@@ -1,5 +1,5 @@
 /**
- * Catálogo de tipos de investimento — explicado sem economês.
+ * Catálogo de tipos de investimento — explicado sem palavras difíceis.
  *
  * Objetivo: mostrar o "cardápio" completo (renda fixa, ações, FIIs, fundos...)
  * com analogias simples, nível de risco e "pra quem é". Conteúdo educacional,

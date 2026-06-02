@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const TITLE = `${SITE_NAME} · Aprenda a investir do zero, sem economês`;
+const TITLE = `${SITE_NAME} · Aprenda a investir do zero, sem palavras difíceis`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

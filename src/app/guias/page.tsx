@@ -5,7 +5,7 @@ import { GUIAS } from "@/data/guias";
 export const metadata: Metadata = {
   title: "Guias para iniciantes · Aprenda a investir sem jargão",
   description:
-    "Respostas diretas e sem economês para as maiores dúvidas de quem está começando a investir: por onde começar, com pouco dinheiro, FII ou renda fixa e como não cair em golpe.",
+    "Respostas diretas e sem palavras difíceis para as maiores dúvidas de quem está começando a investir: por onde começar, com pouco dinheiro, FII ou renda fixa e como não cair em golpe.",
   alternates: { canonical: "/guias" },
 };
 

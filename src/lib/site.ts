@@ -11,7 +11,7 @@ export const SITE_SHORT = "B";
 export const SITE_TAGLINE = "Aprenda a investir";
 
 export const SITE_DESCRIPTION =
-  "Aprenda a investir do zero — FIIs, ações, renda fixa e mais — com calculadoras, guias e linguagem simples. Sem economês, sem golpe. Grátis.";
+  "Aprenda a investir do zero — FIIs, ações, renda fixa e mais — com calculadoras, guias e linguagem simples. Sem palavras difíceis, sem golpe. Grátis.";
 
 /** Rotas públicas indexáveis, com prioridade relativa para o sitemap. */
 export const PUBLIC_ROUTES: Array<{ path: string; priority: number }> = [
