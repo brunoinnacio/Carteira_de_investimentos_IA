@@ -113,8 +113,8 @@ supabase/                # SQL das tabelas (waitlist, carteira_posicoes + RLS)
 ## Setup local
 
 ```bash
-git clone https://github.com/brunoinnacio/fiibrasil.git
-cd fiibrasil
+git clone https://github.com/brunoinnacio/Carteira_de_investimentos_IA.git
+cd Carteira_de_investimentos_IA
 npm install
 cp .env.example .env.local      # preencha com as chaves do seu projeto Supabase
 npm run dev                     # http://localhost:3000
