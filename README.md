@@ -6,6 +6,8 @@ dividendos e renda fixa. Reúne carteira pessoal com sincronização na nuvem,
 importação direta do extrato da B3, calculadoras, simuladores e um radar de
 oportunidades com cotações ao vivo.
 
+![Início do Bolsa Cheia](docs/screenshots/home.png)
+
 > Conteúdo **educacional**, não recomendação de investimento (em conformidade
 > com a postura exigida pela CVM). Todas as classificações seguem regras fixas
 > e transparentes.
@@ -13,6 +15,25 @@ oportunidades com cotações ao vivo.
 **Stack:** Next.js 16 (App Router, Server Actions) · React 19 · TypeScript ·
 Tailwind CSS 4 · Supabase (Auth + Postgres com RLS) · SheetJS (XLSX) ·
 Yahoo Finance (cotações) · Vercel (deploy + Analytics + Speed Insights).
+
+---
+
+## Telas
+
+| Carteira (modo simulação) | Calendário de proventos |
+|:---:|:---:|
+| ![Carteira](docs/screenshots/carteira.png) | ![Calendário](docs/screenshots/calendario.png) |
+
+| Onde investir (FIIs + ações) | Radar (FII / Ação) |
+|:---:|:---:|
+| ![Onde investir](docs/screenshots/oportunidades.png) | ![Radar](docs/screenshots/radar.png) |
+
+| Calculadora de renda passiva | |
+|:---:|:---:|
+| ![Calculadora](docs/screenshots/calculadora.png) | |
+
+> Para regerar as imagens: suba o dev server e rode
+> `python scripts/screenshots.py` (requer `playwright`).
 
 ---
 
