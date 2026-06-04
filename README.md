@@ -156,5 +156,12 @@ e `@vercel/speed-insights` já estão integrados.
 
 ## Licença
 
-Projeto pessoal/portfólio. Conteúdo educacional — veja o
-[aviso legal](./src/app/aviso-legal/page.tsx).
+Distribuído sob a Licença MIT — você pode estudar, usar e adaptar o código,
+desde que mantenha o aviso de copyright. Veja o arquivo [LICENSE](./LICENSE)
+para os termos completos.
+
+© 2026 Bruno Inácio · Licenciado sob a Licença MIT
+
+Conteúdo educacional — veja o
+[aviso legal](./src/app/aviso-legal/page.tsx). Isto não é recomendação de
+investimento.
